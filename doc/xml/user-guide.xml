@@ -224,7 +224,7 @@
 
         <p>The new version can now be installed.</p>
 
-        <execute-list host="{[host-db-master]}">
+        <!-- <execute-list host="{[host-db-master]}">
             <title>Install <backrest/></title>
 
             <execute user="root">
@@ -248,6 +248,15 @@
             </execute>
             <execute user="root">
                 <exe-cmd>chown postgres:postgres /var/log/pgbackrest</exe-cmd>
+            </execute>
+        </execute-list> -->
+
+        <execute-list host="{[host-db-master]}">
+            <title>Install <backrest/></title>
+
+            <execute user="root" show="y">
+                <exe-cmd>yum install -y
+                    /backrest/test/package/crunchy-backrest-1.13-0Crunchy.el6.centos.x86_64.rpm</exe-cmd>
             </execute>
         </execute-list>
 
@@ -277,14 +286,14 @@
             <execute-list host="{[host-db-master]}">
                 <title>Create the demo cluster</title>
 
-                <execute keyword="default" user="postgres">
+                <execute user="postgres">
                     <exe-cmd>
-                        /usr/lib/postgresql/{[pg-version]}/bin/initdb
+                        /usr/pgsql-9.4/bin/initdb
                             -D {[db-path]} -k -A peer</exe-cmd>
                 </execute>
-                <execute user="root" output="y" filter="n">
+                <!-- <execute user="root" output="y" filter="n">
                     <exe-cmd>{[db-cluster-create]}</exe-cmd>
-                </execute>
+                </execute> -->
             </execute-list>
 
             <p>By default <postgres/> will only accept local connections.  The examples in this guide will require connections from other servers so <pg-option>listen_addresses</pg-option> is configured to listen on all interfaces.  This may not be appropriate for secure installations.</p>
@@ -346,7 +355,7 @@
 
             <p>For this demonstration the repository will be stored on the same host as the <postgres/> server.  This is the simplest configuration and is useful in cases where traditional backup software is employed to backup the database host.</p>
 
-            <execute-list host="{[host-db-master]}">
+            <!-- <execute-list host="{[host-db-master]}">
                 <title>Create the <backrest/> repository</title>
 
                 <execute user="root">
@@ -358,7 +367,7 @@
                 <execute user="root">
                     <exe-cmd>chown postgres:postgres {[backrest-repo-path]}</exe-cmd>
                 </execute>
-            </execute-list>
+            </execute-list> -->
 
             <p>The repository path must be configured so <backrest/> knows where to find it.</p>
 
@@ -468,9 +477,9 @@
             <execute-list host="{[host-db-master]}">
                 <title>Backup the {[postgres-cluster-demo]} cluster</title>
 
-                <execute output="y">
+                <execute output="y" filter="n">
                     <exe-cmd>{[project-exe]} {[dash]}-stanza={[postgres-cluster-demo]}
-                        --log-level-console=info backup</exe-cmd>
+                        --log-level-console=info --checksum-page backup</exe-cmd>
                     <exe-highlight>no prior backup exists|full backup size</exe-highlight>
                 </execute>
 
