@@ -46,7 +46,7 @@
 
         <!-- Hosts -->
         <variable key="host-os" keyword="default">u14</variable>
-        <variable key="host-os" keyword="co6">co6</variable>
+        <variable key="host-os" keyword="co6">co7</variable>
 
         <variable key="host-user">vagrant</variable>
         <variable key="host-mount">/backrest:/backrest</variable>
@@ -80,16 +80,18 @@
         <variable key="db-cluster-create" keyword="co6">service postgresql-{[pg-version]} initdb</variable>
 
         <variable key="db-cluster-start" keyword="default">pg_ctlcluster {[pg-version]} {[postgres-cluster-demo]} start</variable>
-        <variable key="db-cluster-start" keyword="co6">service postgresql-{[pg-version]} start</variable>
+        <variable key="db-cluster-start" keyword="co6">/usr/pgsql-9.4/bin/pg_ctl start -D {[db-path]}
+            -l {[db-path]}/startup.log -s -w</variable>
 
         <variable key="db-cluster-stop" keyword="default">pg_ctlcluster {[pg-version]} {[postgres-cluster-demo]} stop</variable>
-        <variable key="db-cluster-stop" keyword="co6">service postgresql-{[pg-version]} stop</variable>
+        <variable key="db-cluster-stop" keyword="co6">/usr/pgsql-9.4/bin/pg_ctl stop -D {[db-path]} -s -w</variable>
 
         <variable key="db-cluster-restart" keyword="default">pg_ctlcluster {[pg-version]} {[postgres-cluster-demo]} restart</variable>
-        <variable key="db-cluster-restart" keyword="co6">service postgresql-{[pg-version]} restart</variable>
+        <variable key="db-cluster-restart" keyword="co6">/usr/pgsql-9.4/bin/pg_ctl restart -D {[db-path]}
+            -l {[db-path]}/startup.log -s -w</variable>
 
         <variable key="db-cluster-reload" keyword="default">pg_ctlcluster {[pg-version]} {[postgres-cluster-demo]} reload</variable>
-        <variable key="db-cluster-reload" keyword="co6">service postgresql-{[pg-version]} reload</variable>
+        <variable key="db-cluster-reload" keyword="co6">/usr/pgsql-9.4/bin/pg_ctl reload -D {[db-path]} -s -w</variable>
     </variable-list>
 
     <!-- SECTION => INTRODUCTION -->
@@ -256,7 +258,7 @@
 
             <execute user="root" show="y">
                 <exe-cmd>yum install -y
-                    /backrest/test/package/crunchy-backrest-1.13-0Crunchy.el6.centos.x86_64.rpm</exe-cmd>
+                    /backrest/test/package/crunchy-backrest-1.13-0Crunchy.el7.x86_64.rpm</exe-cmd>
             </execute>
         </execute-list>
 
@@ -400,8 +402,8 @@
             <execute-list host="{[host-db-master]}">
                 <title>Restart the {[postgres-cluster-demo]} cluster</title>
 
-                <execute user="root">
-                    <exe-cmd>{[db-cluster-restart]}</exe-cmd>
+                <execute user="postgres">
+                    <exe-cmd>{[db-cluster-start]}</exe-cmd>
                 </execute>
 
                 <execute show="n">
@@ -561,7 +563,7 @@
             <execute-list host="{[host-db-master]}">
                 <title>Stop the {[postgres-cluster-demo]} cluster and delete the <file>pg_control</file> file</title>
 
-                <execute user="root">
+                <execute user="postgres">
                     <exe-cmd>{[db-cluster-stop]}</exe-cmd>
                 </execute>
 
