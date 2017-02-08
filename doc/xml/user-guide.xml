@@ -735,6 +735,26 @@
             <p>Note that <id>pg_dump</id> and <id>pg_base_backup</id> do not take online backups so are not affected.  It is safe to run them in conjunction with <backrest/>.</p>
         </section>
 
+        <!-- SECTION => BACKUP - OPTION-CHECKSUM-PAGE -->
+        <section id="option-checksum-page">
+            <title>Checksum Page Option</title>
+
+            <execute-list host="{[host-db-master]}">
+                <title>Error a file on purpose and attempt a backup</title>
+
+                <execute output="n" err-suppress="y">
+                    <exe-cmd>dd if=/dev/zero of=/var/lib/pgsql/9.4/data/base/1/12008
+                        bs=8192 count=3 conv=notrunc</exe-cmd>
+                </execute>
+
+                <execute output="n">
+                    <exe-cmd>{[project-exe]} {[dash]}-stanza={[postgres-cluster-demo]} {[dash]}-type=incr
+                        --log-level-console=info backup</exe-cmd>
+                    <exe-highlight>WARN:</exe-highlight>
+                </execute>
+            </execute-list>
+        </section>
+
         <!-- SECTION => BACKUP - ARCHIVE-TIMEOUT -->
         <section id="option-archive-timeout">
             <title>Archive Timeout</title>
