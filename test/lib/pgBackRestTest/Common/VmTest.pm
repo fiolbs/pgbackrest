@@ -135,6 +135,11 @@ my $oyVm =
             PG_VERSION_95,
             PG_VERSION_96,
         ],
+
+        &VM_DB_DOC =>
+        [
+            PG_VERSION_94,
+        ],
     },
 
     # Debian 8
