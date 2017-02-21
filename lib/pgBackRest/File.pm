@@ -1126,6 +1126,7 @@ sub copy
         $bPathSync,
         $strExtraFunction,
         $rExtraParam,
+        $bTempFile,
     ) =
         logDebugParam
         (
@@ -1138,7 +1139,7 @@ sub copy
             {name => 'bDestinationCompress', default => false},
             {name => 'bIgnoreMissingSource', default => false},
             {name => 'lModificationTime', required => false},
-            {name => 'strMode', default => '0640'},
+            {name => 'strMode', default => fileModeDefaultGet()},
             {name => 'bDestinationPathCreate', default => false},
             {name => 'strUser', required => false},
             {name => 'strGroup', required => false},
@@ -1146,6 +1147,7 @@ sub copy
             {name => 'bPathSync', default => false},
             {name => 'strExtraFunction', required => false},
             {name => 'rExtraParam', required => false},
+            {name => 'bTempFile', default => true},
         );
 
     # Set working variables
@@ -1155,8 +1157,10 @@ sub copy
         $strSourcePathType : $self->pathGet($strSourcePathType, $strSourceFile);
     my $strDestinationOp = $strDestinationPathType eq PIPE_STDOUT ?
         $strDestinationPathType : $self->pathGet($strDestinationPathType, $strDestinationFile);
-    my $strDestinationTmpOp = $strDestinationPathType eq PIPE_STDOUT ?
-        undef : $self->pathGet($strDestinationPathType, $strDestinationFile, true);
+    my $strDestinationTmpOp =
+        $strDestinationPathType eq PIPE_STDOUT ? undef :
+            ($bTempFile ? $self->pathGet($strDestinationPathType, $strDestinationFile, true) :
+                $self->pathGet($strDestinationPathType, $strDestinationFile));
     my $fnExtra = defined($strExtraFunction) ?
         eval("\\&${strExtraFunction}") : undef;                     ## no critic (BuiltinFunctions::ProhibitStringyEval)
 
@@ -1165,6 +1169,12 @@ sub copy
     my $iFileSize = undef;
     my $rExtra = undef;
     my $bResult = true;
+
+    # Temp file is required if checksum will be appended
+    if ($bAppendChecksum && !$bTempFile)
+    {
+        confess &log(ASSERT, 'bTempFile must be true when bAppendChecksum is true');
+    }
 
     # Open the source and destination files (if needed)
     my $hSourceFile;
@@ -1207,14 +1217,14 @@ sub copy
         my $iCreateFlag = O_WRONLY | O_CREAT;
 
         # Open the destination temp file
-        if (!sysopen($hDestinationFile, $strDestinationTmpOp, $iCreateFlag))
+        if (!sysopen($hDestinationFile, $strDestinationTmpOp, $iCreateFlag, oct($strMode)))
         {
             if ($bDestinationPathCreate)
             {
                 filePathCreate(dirname($strDestinationTmpOp), undef, true, true);
             }
 
-            if (!$bDestinationPathCreate || !sysopen($hDestinationFile, $strDestinationTmpOp, $iCreateFlag))
+            if (!$bDestinationPathCreate || !sysopen($hDestinationFile, $strDestinationTmpOp, $iCreateFlag, oct($strMode)))
             {
                 my $strError = "unable to open ${strDestinationTmpOp}: " . $!;
                 my $iErrorCode = ERROR_FILE_READ;
@@ -1236,6 +1246,12 @@ sub copy
         if (!flock($hDestinationFile, LOCK_EX | LOCK_NB))
         {
             confess &log(ERROR, "unable to acquire exclusive lock on ${strDestinationTmpOp}", ERROR_LOCK_ACQUIRE);
+        }
+
+        # Set user and/or group if required
+        if (defined($strUser) || defined($strGroup))
+        {
+            $self->owner(PATH_ABSOLUTE, $strDestinationTmpOp, $strUser, $strGroup);
         }
     }
 
@@ -1261,7 +1277,7 @@ sub copy
             {
                 $self->{oProtocol}->cmdWrite($strRemoteOp,
                     [$strSourceOp, undef, $bSourceCompressed, $bDestinationCompress, undef, undef, undef, undef, undef, undef,
-                        undef, undef, $strExtraFunction, $rExtraParam]);
+                        undef, undef, $strExtraFunction, $rExtraParam, $bTempFile]);
 
                 $bController = true;
             }
@@ -1279,7 +1295,7 @@ sub copy
                     $strRemoteOp,
                     [undef, $strDestinationOp, $bSourceCompressed, $bDestinationCompress, undef, undef, $strMode,
                         $bDestinationPathCreate, $strUser, $strGroup, $bAppendChecksum, $bPathSync, $strExtraFunction,
-                        $rExtraParam]);
+                        $rExtraParam, $bTempFile]);
 
                 $bController = true;
             }
@@ -1293,7 +1309,7 @@ sub copy
                 $strRemoteOp,
                 [$strSourceOp, $strDestinationOp, $bSourceCompressed, $bDestinationCompress, $bIgnoreMissingSource, undef,
                     $strMode, $bDestinationPathCreate, $strUser, $strGroup, $bAppendChecksum, $bPathSync, $strExtraFunction,
-                    $rExtraParam]);
+                    $rExtraParam, $bTempFile]);
 
             $bController = true;
         }
@@ -1415,24 +1431,11 @@ sub copy
         # Where the destination is local, set mode, modification time, and perform move to final location
         if (!$bDestinationRemote)
         {
-            # Set the file Mode if required
-            if (defined($strMode))
-            {
-                chmod(oct($strMode), $strDestinationTmpOp)
-                    or confess &log(ERROR, "unable to set mode for local ${strDestinationTmpOp}");
-            }
-
             # Set the file modification time if required
             if (defined($lModificationTime))
             {
                 utime($lModificationTime, $lModificationTime, $strDestinationTmpOp)
                     or confess &log(ERROR, "unable to set time for local ${strDestinationTmpOp}");
-            }
-
-            # set user and/or group if required
-            if (defined($strUser) || defined($strGroup))
-            {
-                $self->owner(PATH_ABSOLUTE, $strDestinationTmpOp, $strUser, $strGroup);
             }
 
             # Replace checksum in destination filename (if exists)
@@ -1452,7 +1455,10 @@ sub copy
             }
 
             # Move the file from tmp to final destination
-            fileMove($strDestinationTmpOp, $strDestinationOp, $bDestinationPathCreate, $bPathSync);
+            if ($bTempFile)
+            {
+                fileMove($strDestinationTmpOp, $strDestinationOp, $bDestinationPathCreate, $bPathSync);
+            }
         }
     }
 
