@@ -108,9 +108,9 @@ sub run
     # Should the job be run?
     $self->{iTry}++;
 
-    if ($self->{iTry} <= $self->{iRetry})
+    if ($self->{iTry} <= ($self->{iRetry} + 1))
     {
-        if ($self->{iTry} != 1 && $self->{iTry} == $self->{iRetry})
+        if ($self->{iTry} != 1 && $self->{iTry} == ($self->{iRetry} + 1))
         {
             $self->{strLogLevel} = lc(DEBUG);
         }
