@@ -206,11 +206,24 @@ sub save
 {
     my $self = shift;
 
-    $self->hash();
+    $self->saveCopy();
     iniSave($self->{strFileName}, $self->{oContent}, false, true);
 
     # Indicate the file now exists
     $self->{bExists} = true;
+}
+
+####################################################################################################################################
+# saveCopy
+#
+# Save a coy of the file.
+####################################################################################################################################
+sub saveCopy
+{
+    my $self = shift;
+
+    $self->hash();
+    iniSave("$self->{strFileName}.copy", $self->{oContent}, false, true);
 }
 
 ####################################################################################################################################
