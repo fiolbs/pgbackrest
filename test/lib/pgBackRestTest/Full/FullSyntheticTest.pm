@@ -414,7 +414,9 @@ sub run
         executeTest("sudo chmod g+w " . dirname($strTmpPath));
 
         testPathMove($oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strFullBackup}", $strTmpPath);
+        executeTest('sudo chown -R ' . BACKREST_USER . " ${strTmpPath}");
 
+        executeTest("sudo chmod g+w " . $strTmpPath);
         my $oMungeManifest = new pgBackRest::Manifest("$strTmpPath/backup.manifest");
         $oMungeManifest->remove(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/' . DB_FILE_PGVERSION, 'checksum');
         $oMungeManifest->save();
@@ -746,8 +748,9 @@ sub run
         $strTmpPath = $oHostBackup->repoPath() . '/temp/' .$self->stanza() . '.tmp';
 
         testPathMove($oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}", $strTmpPath);
-        executeTest("sudo chmod -R g+w " . dirname($strTmpPath));
+        executeTest('sudo chown -R ' . BACKREST_USER . " ${strTmpPath}");
 
+        executeTest("sudo chmod g+w " . $strTmpPath);
         $oMungeManifest = new pgBackRest::Manifest("$strTmpPath/" . FILE_MANIFEST);
         $oMungeManifest->set(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/badchecksum.txt', 'checksum', 'bogus');
         $oMungeManifest->save();
@@ -782,7 +785,7 @@ sub run
         $strTmpPath = $oHostBackup->repoPath() . '/temp/' . $self->stanza() . '.tmp';
 
         testPathMove($oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}", $strTmpPath);
-        executeTest("sudo chmod -R g+w " . dirname($strTmpPath));
+        executeTest('sudo chown -R ' . BACKREST_USER . " ${strTmpPath}");
 
         $strBackup = $oHostBackup->backup(
             $strType, 'cannot resume - new diff',
@@ -796,7 +799,7 @@ sub run
         $strTmpPath = $oHostBackup->repoPath() . '/temp/' . $self->stanza() . '.tmp';
 
         testPathMove($oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}", $strTmpPath);
-        executeTest("sudo chmod -R g+w " . dirname($strTmpPath));
+        executeTest('sudo chown -R ' . BACKREST_USER . " ${strTmpPath}");
 
         $strBackup = $oHostBackup->backup(
             $strType, 'cannot resume - disabled / no repo link',

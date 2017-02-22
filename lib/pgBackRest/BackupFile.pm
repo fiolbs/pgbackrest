@@ -205,8 +205,6 @@ sub backupFile
 
         if ($bCopy)
         {
-            # !!! NOT SURE WHY THIS IS NEEDED, IS THERE AN OPEN FILE HANDLE?
-            $oFile->remove(PATH_BACKUP_TMP, $strFileOp);
             $iCopyResult = BACKUP_FILE_RECOPY;
         }
         else
