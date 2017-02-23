@@ -73,7 +73,7 @@ sub run
         $oHostDbMaster->executeSimple($strCommand . " ${strSourceFile}", {oLogTest => $self->expect()});
 
         # With data existing in the archive dir, remove the info file and confirm failure
-        $oHostBackup->executeSimple('rm ' . $oFile->pathGet(PATH_BACKUP_ARCHIVE, ARCHIVE_INFO_FILE));
+        $oHostBackup->executeSimple('rm -f ' . $oFile->pathGet(PATH_BACKUP_ARCHIVE, ARCHIVE_INFO_FILE) . '*');
         $oHostBackup->stanzaCreate('fail on archive info file missing from non-empty dir',
             {iExpectedExitStatus => ERROR_PATH_NOT_EMPTY, strOptionalParam => '--no-' . OPTION_ONLINE});
 
@@ -98,12 +98,12 @@ sub run
 
         # Remove the backup info file and confirm success with backup dir empty
         # Backup Full tests will confirm failure when backup dir not empty
-        $oHostBackup->executeSimple('rm ' . $oFile->pathGet(PATH_BACKUP_CLUSTER, FILE_BACKUP_INFO));
+        $oHostBackup->executeSimple('rm -f ' . $oFile->pathGet(PATH_BACKUP_CLUSTER, FILE_BACKUP_INFO) . '*');
         $oHostBackup->stanzaCreate('force not needed when backup dir empty, archive.info exists but backup.info is missing',
             {strOptionalParam => '--no-' . OPTION_ONLINE});
 
         # Remove the backup.info file then munge and save the archive info file
-        $oHostBackup->executeSimple('rm ' . $oFile->pathGet(PATH_BACKUP_CLUSTER, FILE_BACKUP_INFO));
+        $oHostBackup->executeSimple('rm -f ' . $oFile->pathGet(PATH_BACKUP_CLUSTER, FILE_BACKUP_INFO) . '*');
         $oHostBackup->infoMunge(
             $oFile->pathGet(PATH_BACKUP_ARCHIVE, ARCHIVE_INFO_FILE),
             {&INFO_BACKUP_SECTION_DB => {&INFO_BACKUP_KEY_DB_VERSION => '8.0'}});
@@ -123,7 +123,7 @@ sub run
             DB_FILE_PGCONTROL);
 
         # Remove the archive info file
-        $oHostBackup->executeSimple('rm ' . $oFile->pathGet(PATH_BACKUP_ARCHIVE, ARCHIVE_INFO_FILE));
+        $oHostBackup->executeSimple('rm ' . $oFile->pathGet(PATH_BACKUP_ARCHIVE, ARCHIVE_INFO_FILE) . '*');
 
         # Run stanza-create with --force
         $oHostBackup->stanzaCreate('test force fails for database mismatch with directory',

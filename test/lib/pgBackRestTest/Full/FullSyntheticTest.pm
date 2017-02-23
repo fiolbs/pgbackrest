@@ -890,7 +890,7 @@ sub run
         # Delete the backup.info and make sure the backup fails - the user must then run a stanza-create --force
         if ($bNeutralTest)
         {
-            executeTest('sudo rm ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/backup.info');
+            executeTest('sudo rm -f ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/backup.info*');
         }
 
         $oHostDbMaster->manifestFileCreate(
