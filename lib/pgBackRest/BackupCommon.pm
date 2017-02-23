@@ -13,7 +13,11 @@ use File::Basename;
 
 use pgBackRest::Common::Log;
 use pgBackRest::Common::String;
+use pgBackRest::Common::Wait;
 use pgBackRest::Config::Config;
+use pgBackRest::File;
+use pgBackRest::FileCommon;
+use pgBackRest::Manifest;
 
 ####################################################################################################################################
 # Latest backup link constant
@@ -123,14 +127,14 @@ sub backupLabelFormat
         $strOperation,
         $strType,
         $strBackupLabelLast,
-        $lTimestampStop
+        $lTimestampStart
     ) =
         logDebugParam
         (
             __PACKAGE__ . '::backupLabelFormat', \@_,
             {name => 'strType', trace => true},
             {name => 'strBackupLabelLast', required => false, trace => true},
-            {name => 'lTimestampStop', trace => true}
+            {name => 'lTimestampTart', trace => true}
         );
 
     # Full backup label
@@ -145,7 +149,7 @@ sub backupLabelFormat
         }
 
         # Format the timestamp and add the full indicator
-        $strBackupLabel = timestampFileFormat(undef, $lTimestampStop) . 'F';
+        $strBackupLabel = timestampFileFormat(undef, $lTimestampStart) . 'F';
     }
     # Else diff or incr label
     else
@@ -160,7 +164,7 @@ sub backupLabelFormat
         $strBackupLabel = substr($strBackupLabelLast, 0, 16);
 
         # Format the timestamp
-        $strBackupLabel .= '_' . timestampFileFormat(undef, $lTimestampStop);
+        $strBackupLabel .= '_' . timestampFileFormat(undef, $lTimestampStart);
 
         # Add the diff indicator
         if ($strType eq BACKUP_TYPE_DIFF)
@@ -183,5 +187,60 @@ sub backupLabelFormat
 }
 
 push @EXPORT, qw(backupLabelFormat);
+
+####################################################################################################################################
+# backupLabel
+#
+# Get a unique backup label.
+####################################################################################################################################
+sub backupLabel
+{
+    # Assign function parameters, defaults, and log debug info
+    my
+    (
+        $strOperation,
+        $oFile,
+        $strType,
+        $strBackupLabelLast,
+        $lTimestampStart
+    ) =
+        logDebugParam
+        (
+            __PACKAGE__ . '::backupLabelFormat', \@_,
+            {name => 'oFile', trace => true},
+            {name => 'strType', trace => true},
+            {name => 'strBackupLabelLast', required => false, trace => true},
+            {name => 'lTimestampStart', trace => true}
+        );
+
+    # Create backup label
+    my $strBackupLabel = backupLabelFormat($strType, $strBackupLabelLast, $lTimestampStart);
+
+    # Make sure that the timestamp has not already been used by a prior backup.  This is unlikely for online backups since there is
+    # already a wait after the manifest is built but it's still possible if the remote and local systems don't have synchronized
+    # clocks.  In practice this is most useful for making offline testing faster since it allows the wait after manifest build to
+    # be skipped by dealing with any backup label collisions here.
+    if (fileList($oFile->pathGet(PATH_BACKUP_CLUSTER),
+                 ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
+                 timestampFileFormat(undef, $lTimestampStart) .
+                 ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)$')) ||
+        fileList($oFile->pathGet(PATH_BACKUP_CLUSTER, PATH_BACKUP_HISTORY . '/' . timestampFormat('%4d', $lTimestampStart)),
+                 ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
+                 timestampFileFormat(undef, $lTimestampStart) .
+                 ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)\.manifest\.' . $oFile->{strCompressExtension}), undef, true))
+    {
+        waitRemainder();
+        $strBackupLabel = backupLabelFormat($strType, $strBackupLabelLast, time());
+    }
+
+    # Return from function and log return values if any
+    return logDebugReturn
+    (
+        $strOperation,
+        {name => 'strBackupLabel', value => $strBackupLabel, trace => true}
+    );
+}
+
+push @EXPORT, qw(backupLabel);
 
 1;

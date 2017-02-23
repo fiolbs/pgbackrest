@@ -14,6 +14,7 @@ use Carp qw(confess);
 use File::Basename qw(dirname);
 
 use pgBackRest::Archive::ArchiveInfo;
+use pgBackRest::BackupCommon;
 use pgBackRest::BackupInfo;
 use pgBackRest::DbVersion;
 use pgBackRest::Common::Exception;
@@ -410,8 +411,15 @@ sub run
         testFileCreate($oHostDbMaster->tablespacePath(2, 2) . '/donotdelete.txt', 'DONOTDELETE-2-2');
         filePathCreate($oHostDbMaster->tablespacePath(11), undef, undef, true);
 
-        # Create resumable backup from full backup
-        my $strResumePath = $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strFullBackup}";
+        # Resume by copying the valid full backup over the last aborted full backup if it exists, or by creating a new path
+        my $strResumeBackup = ($oFile->list(PATH_BACKUP_CLUSTER, undef, backupRegExpGet(true, true, true), 'reverse'))[0];
+        my $strResumePath = $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/' .
+            ($strResumeBackup ne $strFullBackup ? $strResumeBackup : backupLabel($oFile, $strType, undef, time()));
+
+        executeTest("sudo rm -rf ${strResumePath}");
+        executeTest(
+            'sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strFullBackup} ${strResumePath}");
+
         executeTest("sudo chmod g+w ${strResumePath}") if $bRemote;
         my $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
@@ -421,7 +429,7 @@ sub run
         # Create a temp file in backup temp root to be sure it's deleted correctly
         executeTest("touch ${strResumePath}/file.tmp" . ($bCompress ? '.gz' : ''),
                     {bRemote => $bRemote});
-        executeTest("sudo chown " . BACKREST_USER . " ${strResumePath}/file.tmp");
+        executeTest("sudo chown " . BACKREST_USER . " ${strResumePath}/file.tmp" . ($bCompress ? '.gz' : ''));
 
         $strFullBackup = $oHostBackup->backup(
             $strType, 'resume',
@@ -742,11 +750,15 @@ sub run
         $strType = BACKUP_TYPE_INCR;
 
         # Create resumable backup from last backup
-        $strResumePath = $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}";
+        $strResumePath =
+            $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/' .
+            backupLabel($oFile, $strType, substr($strBackup, 0, 16), time());
+        # executeTest("sudo rm -rf ${strResumePath}");
+        executeTest('sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup} ${strResumePath}");
         executeTest("sudo chmod g+w ${strResumePath}") if $bRemote;
         $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
-        $oMungeManifest->remove(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/' . DB_FILE_PGVERSION, 'checksum');
+        $oMungeManifest->set(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/badchecksum.txt', 'checksum', 'bogus');
         $oMungeManifest->saveCopy();
 
         # Add tablespace 2

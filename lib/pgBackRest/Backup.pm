@@ -97,7 +97,7 @@ sub fileNotInManifest
     foreach my $strName (sort(keys(%{$hFile})))
     {
         # Ignore certain files that will never be in the manifest
-        if ($strName eq FILE_MANIFEST ||
+        if ($strName eq (FILE_MANIFEST . '.copy') ||
             $strName eq '.')
         {
             next;
@@ -203,7 +203,7 @@ sub tmpClean
         {name => 'oAbortedManifest', trace => true}
     );
 
-    &log(DETAIL, 'clean backup temp path: ' . $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel));
+    &log(DETAIL, 'clean resumed backup path: ' . $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel));
 
     # Get the list of files that should be deleted from temp
     my @stryFile = $self->fileNotInManifest($oFileLocal, PATH_BACKUP_CLUSTER, $strBackupLabel, $oManifest, $oAbortedManifest);
@@ -643,34 +643,16 @@ sub process
                 $oFileLocal->remove(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST . '.copy');
                 undef($oAbortedManifest);
             }
+
+            last;
         }
     }
 
+    # If backup label is not defined then create the label and path.
     if (!defined($strBackupLabel))
     {
-        # Create the path for the new backup
-        $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, $lTimestampStart);
-
-        # Make sure that the timestamp has not already been used by a prior backup.  This is unlikely for online backups since there is
-        # already a wait after the manifest is built but it's still possible if the remote and local systems don't have synchronized
-        # clocks.  In practice this is most useful for making offline testing faster since it allows the wait after manifest build to
-        # be skipped by dealing with any backup label collisions here.
-        if (fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER),
-                     ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
-                     timestampFileFormat(undef, $lTimestampStart) .
-                     ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)$')) ||
-            fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER, PATH_BACKUP_HISTORY . '/' . timestampFormat('%4d', $lTimestampStart)),
-                     ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
-                     timestampFileFormat(undef, $lTimestampStart) .
-                     ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)\.manifest\.' . $oFileLocal->{strCompressExtension}), undef, true))
-        {
-            waitRemainder();
-            $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, time());
-        }
-
+        $strBackupLabel = backupLabel($oFileLocal, $strType, $strBackupLastPath, $lTimestampStart);
         $strBackupPath = $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel);
-        logDebugMisc($strOperation, "create backup path ${strBackupPath}");
-        $oFileLocal->pathCreate(PATH_BACKUP_CLUSTER, $strBackupLabel, undef, false, true);
     }
 
     # Declare the backup manifest
@@ -858,11 +840,17 @@ sub process
     # If resuming from an aborted backup
     if (defined($oAbortedManifest))
     {
-        &log(WARN, 'aborted backup of same type exists, will be cleaned to remove invalid files and resumed');
+        &log(WARN, "aborted backup ${strBackupLabel} of same type exists, will be cleaned to remove invalid files and resumed");
         &log(TEST, TEST_BACKUP_RESUME);
 
         # Clean the old backup tmp path
         $self->tmpClean($oFileLocal, $strBackupLabel, $oBackupManifest, $oAbortedManifest);
+    }
+    # Else create the backup path
+    else
+    {
+        logDebugMisc($strOperation, "create backup path ${strBackupPath}");
+        $oFileLocal->pathCreate(PATH_BACKUP_CLUSTER, $strBackupLabel, undef, false, true);
     }
 
     # Save the backup manifest
@@ -985,14 +973,14 @@ sub process
     $oBackupManifest->set(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TIMESTAMP_STOP, undef, $lTimestampStop + 0);
     $oBackupManifest->set(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_LABEL, undef, $strBackupLabel);
 
-    # Final save of the backup manifest
-    $oBackupManifest->save();
-
-    # Sync all paths in the backup tmp path
+    # Sync all paths in the backup cluster path
     if (optionGet(OPTION_REPO_SYNC))
     {
         $oFileLocal->pathSync(PATH_BACKUP_CLUSTER, $strBackupLabel, true);
     }
+
+    # Final save of the backup manifest
+    $oBackupManifest->save();
 
     &log(INFO, "new backup label = ${strBackupLabel}");
 
@@ -1002,10 +990,6 @@ sub process
         PATH_BACKUP_CLUSTER, "${strBackupLabel}/" . FILE_MANIFEST . '.gz',
         undef, true,
         undef, undef, undef, undef, undef, undef, undef, undef, undef, undef, false);
-
-    # Move the backup tmp path to complete the backup
-    # logDebugMisc($strOperation, "move ${strBackupTmpPath} to " . $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel));
-    # $oFileLocal->move(PATH_BACKUP_TMP, undef, PATH_BACKUP_CLUSTER, $strBackupLabel);
 
     # Copy manifest to history
     $oFileLocal->move(PATH_BACKUP_CLUSTER, "${strBackupLabel}/" . FILE_MANIFEST . '.gz',
