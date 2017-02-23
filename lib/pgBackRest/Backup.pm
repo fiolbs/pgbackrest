@@ -97,7 +97,7 @@ sub fileNotInManifest
     foreach my $strName (sort(keys(%{$hFile})))
     {
         # Ignore certain files that will never be in the manifest
-        if ($strName eq (FILE_MANIFEST . '.copy') ||
+        if ($strName eq FILE_MANIFEST_COPY ||
             $strName eq '.')
         {
             next;
@@ -539,7 +539,7 @@ sub process
     foreach my $strAbortedBackup ($oFileLocal->list(PATH_BACKUP_CLUSTER, undef, backupRegExpGet(true, true, true), 'reverse'))
     {
         # Abort backups have a copy of the manifest but no manifest
-        if ($oFileLocal->exists(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST . '.copy') &&
+        if ($oFileLocal->exists(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST_COPY) &&
             !$oFileLocal->exists(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST))
         {
             my $bUsable;
@@ -555,7 +555,7 @@ sub process
                 eval
                 {
                     # Load the aborted manifest
-                    $oAbortedManifest = new pgBackRest::Manifest("${strBackupPath}/" . FILE_MANIFEST . '.copy');
+                    $oAbortedManifest = new pgBackRest::Manifest("${strBackupPath}/" . FILE_MANIFEST_COPY);
 
                     # Key and values that do not match
                     my $strKey;
@@ -640,7 +640,7 @@ sub process
                     ' - will be dropped');
                 &log(TEST, TEST_BACKUP_NORESUME);
 
-                $oFileLocal->remove(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST . '.copy');
+                $oFileLocal->remove(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST_COPY);
                 undef($oAbortedManifest);
             }
 
