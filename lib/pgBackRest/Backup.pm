@@ -72,6 +72,7 @@ sub fileNotInManifest
         $strOperation,
         $oFileLocal,
         $strPathType,
+        $strPath,
         $oManifest,
         $oAbortedManifest
     ) =
@@ -80,12 +81,13 @@ sub fileNotInManifest
             __PACKAGE__ . '->fileNotInManifest', \@_,
             {name => 'oFileLocal', trace => true},
             {name => 'strPathType', trace => true},
+            {name => 'strPath', trace => true},
             {name => 'oManifest', trace => true},
             {name => 'oAbortedManifest', trace => true}
         );
 
     # Build manifest for aborted temp path
-    my $hFile = $oFileLocal->manifest($strPathType);
+    my $hFile = $oFileLocal->manifest($strPathType, $strPath);
 
     # Get compress flag
     my $bCompressed = $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS);
@@ -188,6 +190,7 @@ sub tmpClean
     (
         $strOperation,
         $oFileLocal,
+        $strBackupLabel,
         $oManifest,
         $oAbortedManifest
     ) =
@@ -195,18 +198,19 @@ sub tmpClean
     (
         __PACKAGE__ . '->tmpClean', \@_,
         {name => 'oFileLocal', trace => true},
+        {name => 'strBackupLabel', trace => true},
         {name => 'oManifest', trace => true},
         {name => 'oAbortedManifest', trace => true}
     );
 
-    &log(DETAIL, 'clean backup temp path: ' . $oFileLocal->pathGet(PATH_BACKUP_TMP));
+    &log(DETAIL, 'clean backup temp path: ' . $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel));
 
     # Get the list of files that should be deleted from temp
-    my @stryFile = $self->fileNotInManifest($oFileLocal, PATH_BACKUP_TMP, $oManifest, $oAbortedManifest);
+    my @stryFile = $self->fileNotInManifest($oFileLocal, PATH_BACKUP_CLUSTER, $strBackupLabel, $oManifest, $oAbortedManifest);
 
     foreach my $strFile (sort {$b cmp $a} @stryFile)
     {
-        my $strDelete = $oFileLocal->pathGet(PATH_BACKUP_TMP, $strFile);
+        my $strDelete = $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, "${strBackupLabel}/${strFile}");
 
         # If a path then delete it, all the files should have already been deleted since we are going in reverse order
         if (!-X $strDelete && -d $strDelete)
@@ -527,28 +531,147 @@ sub process
         }
     }
 
-    # Create the path for the new backup
-    my $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, $lTimestampStart);
+    # Search cluster directory for an aborted backup
+    my $strBackupLabel;
+    my $oAbortedManifest;
+    my $strBackupPath;
 
-    # Make sure that the timestamp has not already been used by a prior backup.  This is unlikely for online backups since there is
-    # already a wait after the manifest is built but it's still possible if the remote and local systems don't have synchronized
-    # clocks.  In practice this is most useful for making offline testing faster since it allows the wait after manifest build to
-    # be skipped by dealing with any backup label collisions here.
-    if (fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER),
-                 ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
-                 timestampFileFormat(undef, $lTimestampStart) .
-                 ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)$')) ||
-        fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER, PATH_BACKUP_HISTORY . '/' . timestampFormat('%4d', $lTimestampStart)),
-                 ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
-                 timestampFileFormat(undef, $lTimestampStart) .
-                 ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)\.manifest\.' . $oFileLocal->{strCompressExtension}), undef, true))
+    foreach my $strAbortedBackup ($oFileLocal->list(PATH_BACKUP_CLUSTER, undef, backupRegExpGet(true, true, true), 'reverse'))
     {
-        waitRemainder();
-        $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, time());
+        # Abort backups have a copy of the manifest but no manifest
+        if ($oFileLocal->exists(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST . '.copy') &&
+            !$oFileLocal->exists(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST))
+        {
+            my $bUsable;
+            my $strReason = "resume is disabled";
+            $strBackupPath = $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strAbortedBackup);
+
+            # Attempt to read the manifest file in the aborted backup to see if it can be used.  If any error at all occurs then the
+            # backup will be considered unusable and a resume will not be attempted.
+            if (optionGet(OPTION_RESUME))
+            {
+                $strReason = "unable to read ${strBackupPath}/" . FILE_MANIFEST;
+
+                eval
+                {
+                    # Load the aborted manifest
+                    $oAbortedManifest = new pgBackRest::Manifest("${strBackupPath}/" . FILE_MANIFEST . '.copy');
+
+                    # Key and values that do not match
+                    my $strKey;
+                    my $strValueNew;
+                    my $strValueAborted;
+
+                    # Check version
+                    if ($oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION) ne BACKREST_VERSION)
+                    {
+                        $strKey =  INI_KEY_VERSION;
+                        $strValueNew = BACKREST_VERSION;
+                        $strValueAborted = $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION);
+                    }
+                    # Check format
+                    elsif ($oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT) ne BACKREST_FORMAT)
+                    {
+                        $strKey =  INI_KEY_FORMAT;
+                        $strValueNew = BACKREST_FORMAT;
+                        $strValueAborted = $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT);
+                    }
+                    # Check backup type
+                    elsif ($oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE) ne $strType)
+                    {
+                        $strKey =  MANIFEST_KEY_TYPE;
+                        $strValueNew = $strType;
+                        $strValueAborted = $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE);
+                    }
+                    # Check prior label
+                    elsif ($oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>') ne
+                           (defined($strBackupLastPath) ? $strBackupLastPath : '<undef>'))
+                    {
+                        $strKey =  MANIFEST_KEY_PRIOR;
+                        $strValueNew = defined($strBackupLastPath) ? $strBackupLastPath : '<undef>';
+                        $strValueAborted =
+                            $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>');
+                    }
+                    # Check compression
+                    elsif ($oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS) !=
+                           optionGet(OPTION_COMPRESS))
+                    {
+                        $strKey = MANIFEST_KEY_COMPRESS;
+                        $strValueNew = optionGet(OPTION_COMPRESS);
+                        $strValueAborted = $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS);
+                    }
+                    # Check hardlink
+                    elsif ($oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK) !=
+                           optionGet(OPTION_HARDLINK))
+                    {
+                        $strKey = MANIFEST_KEY_HARDLINK;
+                        $strValueNew = optionGet(OPTION_HARDLINK);
+                        $strValueAborted = $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK);
+                    }
+
+                    # If key is defined then something didn't match
+                    if (defined($strKey))
+                    {
+                        $strReason = "new ${strKey} '${strValueNew}' does not match aborted ${strKey} '${strValueAborted}'";
+                    }
+                    # Else the backup can be resumed
+                    else
+                    {
+                        $bUsable = true;
+                    }
+
+                    return true;
+                }
+                or do
+                {
+                    $bUsable = false;
+                }
+            }
+
+            # If the backup is usable then set the backup label
+            if ($bUsable)
+            {
+                $strBackupLabel = $strAbortedBackup;
+            }
+            else
+            {
+                &log(WARN,
+                    "aborted backup ${strAbortedBackup} exists, but cannot be resumed (${strReason})" .
+                    ' - will be dropped');
+                &log(TEST, TEST_BACKUP_NORESUME);
+
+                $oFileLocal->remove(PATH_BACKUP_CLUSTER, "${strAbortedBackup}/" . FILE_MANIFEST . '.copy');
+                undef($oAbortedManifest);
+            }
+        }
     }
 
-    # Build backup path and config
-    my $strBackupPath = $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel);
+    if (!defined($strBackupLabel))
+    {
+        # Create the path for the new backup
+        $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, $lTimestampStart);
+
+        # Make sure that the timestamp has not already been used by a prior backup.  This is unlikely for online backups since there is
+        # already a wait after the manifest is built but it's still possible if the remote and local systems don't have synchronized
+        # clocks.  In practice this is most useful for making offline testing faster since it allows the wait after manifest build to
+        # be skipped by dealing with any backup label collisions here.
+        if (fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER),
+                     ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
+                     timestampFileFormat(undef, $lTimestampStart) .
+                     ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)$')) ||
+            fileList($oFileLocal->pathGet(PATH_BACKUP_CLUSTER, PATH_BACKUP_HISTORY . '/' . timestampFormat('%4d', $lTimestampStart)),
+                     ($strType eq BACKUP_TYPE_FULL ? '^' : '_') .
+                     timestampFileFormat(undef, $lTimestampStart) .
+                     ($strType eq BACKUP_TYPE_FULL ? 'F' : '(D|I)\.manifest\.' . $oFileLocal->{strCompressExtension}), undef, true))
+        {
+            waitRemainder();
+            $strBackupLabel = backupLabelFormat($strType, $strBackupLastPath, time());
+        }
+
+        $strBackupPath = $oFileLocal->pathGet(PATH_BACKUP_CLUSTER, $strBackupLabel);
+        logDebugMisc($strOperation, "create backup path ${strBackupPath}");
+        $oFileLocal->pathCreate(PATH_BACKUP_CLUSTER, $strBackupLabel, undef, false, true);
+    }
 
     # Declare the backup manifest
     my $oBackupManifest = new pgBackRest::Manifest("$strBackupPath/" . FILE_MANIFEST, false);
@@ -732,123 +855,15 @@ sub process
                             $hTablespaceMap, $hDatabaseMap);
     &log(TEST, TEST_MANIFEST_BUILD);
 
-    # Check if an aborted backup exists for this stanza
-    # if (-e $strBackupTmpPath)
-    # {
-    #     my $bUsable;
-    #     my $strReason = "resume is disabled";
-    #     my $oAbortedManifest;
-    #
-    #     # Attempt to read the manifest file in the aborted backup to see if it can be used.  If any error at all occurs then the
-    #     # backup will be considered unusable and a resume will not be attempted.
-    #     if (optionGet(OPTION_RESUME))
-    #     {
-    #         $strReason = "unable to read ${strBackupTmpPath}/backup.manifest";
-    #
-    #         eval
-    #         {
-    #             # Load the aborted manifest
-    #             $oAbortedManifest = new pgBackRest::Manifest("${strBackupTmpPath}/backup.manifest");
-    #
-    #             # Key and values that do not match
-    #             my $strKey;
-    #             my $strValueNew;
-    #             my $strValueAborted;
-    #
-    #             # Check version
-    #             if ($oBackupManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION) ne
-    #                 $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION))
-    #             {
-    #                 $strKey =  INI_KEY_VERSION;
-    #                 $strValueNew = $oBackupManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION);
-    #                 $strValueAborted = $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_VERSION);
-    #             }
-    #             # Check format
-    #             elsif ($oBackupManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT) ne
-    #                    $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT))
-    #             {
-    #                 $strKey =  INI_KEY_FORMAT;
-    #                 $strValueNew = $oBackupManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT);
-    #                 $strValueAborted = $oAbortedManifest->get(INI_SECTION_BACKREST, INI_KEY_FORMAT);
-    #             }
-    #             # Check backup type
-    #             elsif ($oBackupManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE) ne
-    #                    $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE))
-    #             {
-    #                 $strKey =  MANIFEST_KEY_TYPE;
-    #                 $strValueNew = $oBackupManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE);
-    #                 $strValueAborted = $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE);
-    #             }
-    #             # Check prior label
-    #             elsif ($oBackupManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>') ne
-    #                    $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>'))
-    #             {
-    #                 $strKey =  MANIFEST_KEY_PRIOR;
-    #                 $strValueNew = $oBackupManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>');
-    #                 $strValueAborted = $oAbortedManifest->get(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_PRIOR, undef, false, '<undef>');
-    #             }
-    #             # Check compression
-    #             elsif ($oBackupManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS) ne
-    #                    $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS))
-    #             {
-    #                 $strKey = MANIFEST_KEY_COMPRESS;
-    #                 $strValueNew = $oBackupManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS);
-    #                 $strValueAborted = $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_COMPRESS);
-    #             }
-    #             # Check hardlink
-    #             elsif ($oBackupManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK) ne
-    #                    $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK))
-    #             {
-    #                 $strKey = MANIFEST_KEY_HARDLINK;
-    #                 $strValueNew = $oBackupManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK);
-    #                 $strValueAborted = $oAbortedManifest->boolGet(MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_HARDLINK);
-    #             }
-    #
-    #             # If key is defined then something didn't match
-    #             if (defined($strKey))
-    #             {
-    #                 $strReason = "new ${strKey} '${strValueNew}' does not match aborted ${strKey} '${strValueAborted}'";
-    #             }
-    #             # Else the backup can be resumed
-    #             else
-    #             {
-    #                 $bUsable = true;
-    #             }
-    #
-    #             return true;
-    #         }
-    #         or do
-    #         {
-    #             $bUsable = false;
-    #         }
-    #     }
-    #
-    #     # If the aborted backup is usable then clean it
-    #     if ($bUsable)
-    #     {
-    #         &log(WARN, 'aborted backup of same type exists, will be cleaned to remove invalid files and resumed');
-    #         &log(TEST, TEST_BACKUP_RESUME);
-    #
-    #         # Clean the old backup tmp path
-    #         $self->tmpClean($oFileLocal, $oBackupManifest, $oAbortedManifest);
-    #     }
-    #     # Else remove it
-    #     else
-    #     {
-    #         &log(WARN, "aborted backup exists, but cannot be resumed (${strReason}) - will be dropped and recreated");
-    #         &log(TEST, TEST_BACKUP_NORESUME);
-    #
-    #         remove_tree($oFileLocal->pathGet(PATH_BACKUP_TMP))
-    #             or confess &log(ERROR, "unable to delete tmp path: ${strBackupTmpPath}");
-    #         $oFileLocal->pathCreate(PATH_BACKUP_TMP, undef, undef, false, true);
-    #     }
-    # }
-    # # Else create the backup tmp path
-    # else
-    # {
-        logDebugMisc($strOperation, "create backup path ${strBackupPath}");
-        $oFileLocal->pathCreate(PATH_BACKUP_CLUSTER, $strBackupLabel, undef, false, true);
-    # }
+    # If resuming from an aborted backup
+    if (defined($oAbortedManifest))
+    {
+        &log(WARN, 'aborted backup of same type exists, will be cleaned to remove invalid files and resumed');
+        &log(TEST, TEST_BACKUP_RESUME);
+
+        # Clean the old backup tmp path
+        $self->tmpClean($oFileLocal, $strBackupLabel, $oBackupManifest, $oAbortedManifest);
+    }
 
     # Save the backup manifest
     $oBackupManifest->saveCopy();
