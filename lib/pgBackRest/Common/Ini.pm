@@ -489,15 +489,7 @@ sub boolGet
 ####################################################################################################################################
 sub numericGet
 {
-    my $self = shift;
-    my $strSection = shift;
-    my $strValue = shift;
-    my $strSubValue = shift;
-    my $bRequired = shift;
-    my $nDefault = shift;
-
-    return $self->get($strSection, $strValue, $strSubValue, $bRequired,
-                      defined($nDefault) ? $nDefault + 0 : undef) + 0;
+    return shift->get(shift, shift, shift, shift, defined($_[0]) ? shift() + 0 : undef) + 0;
 }
 
 ####################################################################################################################################
@@ -563,7 +555,7 @@ sub boolSet
 ####################################################################################################################################
 sub numericSet
 {
-    shift->set(shift, shift, shift, shift() + 0);
+    shift->set(shift, shift, shift, defined($_[0]) ? shift() + 0 : undef);
 }
 
 ####################################################################################################################################
@@ -593,22 +585,54 @@ sub remove
     my $strSection = shift;
     my $strKey = shift;
     my $strSubKey = shift;
-    my $strValue = shift;
 
-    my $oContent = $self->{oContent};
+    # Test if the value exists
+    if ($self->test($strSection, $strKey, $strSubKey))
+    {
+        # Remove a subkey
+        if (defined($strSubKey))
+        {
+            delete($self->{oContent}{$strSection}{$strKey}{$strSubKey});
 
-    if (defined($strSubKey))
-    {
-        delete(${$oContent}{$strSection}{$strKey}{$strSubKey});
+            # Remove the key if it is now empty
+            if (keys(%{$self->{oContent}{$strSection}{$strKey}}) == 0)
+            {
+                delete($self->{oContent}{$strSection}{$strKey});
+            }
+        }
+
+        # Remove a key
+        if (defined($strKey))
+        {
+            if (!defined($strSubKey))
+            {
+                delete($self->{oContent}{$strSection}{$strKey});
+            }
+
+            # Remove the section if it is now empty
+            if (keys(%{$self->{oContent}{$strSection}}) == 0)
+            {
+                delete($self->{oContent}{$strSection});
+            }
+        }
+
+        # Remove a section
+        if (!defined($strKey))
+        {
+            delete($self->{oContent}{$strSection});
+        }
+
+        # Record changes
+        if (!$self->{bChanged})
+        {
+            $self->{bChanged} = true;
+            $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE}++;
+        }
+
+        return true;
     }
-    elsif (defined($strKey))
-    {
-        delete(${$oContent}{$strSection}{$strKey});
-    }
-    else
-    {
-        delete(${$oContent}{$strSection});
-    }
+
+    return false;
 }
 
 ####################################################################################################################################
@@ -664,10 +688,13 @@ sub test
     my $strSubValue = shift;
     my $strTest = shift;
 
+    # Get the value
     my $strResult = $self->get($strSection, $strValue, $strSubValue, false);
 
+    # Is there a result
     if (defined($strResult))
     {
+        # Is there a value to test against?
         if (defined($strTest))
         {
             return $strResult eq $strTest ? true : false;
@@ -686,13 +713,7 @@ sub test
 ####################################################################################################################################
 sub boolTest
 {
-    my $self = shift;
-    my $strSection = shift;
-    my $strValue = shift;
-    my $strSubValue = shift;
-    my $bTest = shift;
-
-    return $self->test($strSection, $strValue, $strSubValue, defined($bTest) ? ($bTest ? INI_TRUE : INI_FALSE) : undef);
+    return shift->test(shift, shift, shift, defined($_[0]) ? (shift ? INI_TRUE : INI_FALSE) : undef);
 }
 
 1;

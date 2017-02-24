@@ -232,19 +232,130 @@ sub run
     }
 
     ################################################################################################################################
-    if ($self->begin("Ini->boolSet() & Ini->boolGet()"))
+    if ($self->begin("Ini->remove()"))
     {
         my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testException(sub {$oIni->remove()}, ERROR_ASSERT, 'strSection is required');
+
+        $self->testException(
+            sub {$oIni->remove($strSection, undef, $strSubKey)}, ERROR_ASSERT,
+            "strKey is required when strSubKey '${strSubKey}' is requested");
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $oIni->{bChanged} = false;
+        $self->testResult(sub {$oIni->remove($strSection)}, false, 'undefined section is not removed');
+        $self->testResult($oIni->{bChanged}, '0', '    check changed flag remains false');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key');
+
+        $oIni->{bChanged} = false;
+        $self->testResult(sub {$oIni->remove($strSection, $strKey)}, true, '    remove key');
+        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, '    test key');
+        $self->testResult(sub {$oIni->test($strSection)}, false, '    test section');
+
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key 1');
+        $self->testResult(sub {$oIni->set($strSection, "${strKey}2", undef, $strValue)}, true, '    set key 2');
+        $self->testResult(sub {$oIni->remove($strSection, $strKey)}, true, '    remove key 1');
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, '    test key');
+        $self->testResult(sub {$oIni->test($strSection)}, true, '    test section');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key');
+
+        $self->testResult(sub {$oIni->remove($strSection)}, true, '    remove section');
+        $self->testResult(sub {$oIni->test($strSection)}, false, '    test section');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->set($strSection, $strKey, $strSubKey, $strValue)}, true, 'set subkey');
+
+        $self->testResult(sub {$oIni->remove($strSection, $strKey, $strSubKey)}, true, '    remove subkey');
+        $self->testResult(sub {$oIni->test($strSection, $strKey, $strSubKey)}, false, '    test subkey');
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, '    test key');
+        $self->testResult(sub {$oIni->test($strSection)}, false, '    test section');
+
+        $self->testResult(sub {$oIni->set($strSection, $strKey, $strSubKey, $strValue)}, true, 'set subkey 1');
+        $self->testResult(sub {$oIni->set($strSection, $strKey, "${strSubKey}2", $strValue)}, true, 'set subkey 2');
+
+        $self->testResult(sub {$oIni->remove($strSection, $strKey, $strSubKey)}, true, '    remove subkey');
+        $self->testResult(sub {$oIni->test($strSection, $strKey, $strSubKey)}, false, '    test subkey');
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, true, '    test key');
+        $self->testResult(sub {$oIni->test($strSection)}, true, '    test section');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->test()"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, 'test undefined key');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'define key');
+
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, true, 'test key exists');
+
+        $self->testResult(sub {$oIni->test($strSection, $strKey, undef, $strValue)}, true, 'test key value');
+
+        $self->testResult(sub {$oIni->test($strSection, $strKey, undef, BOGUS)}, false, 'test key invalid value');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->boolSet() & Ini->boolGet() & Ini->boolTest()"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->boolTest($strSection, $strKey)}, false, 'test bool on undefined key');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->boolGet($strSection, $strKey, undef, false, false)}, false, 'get bool default false value');
+        $self->testResult(sub {$oIni->boolGet($strSection, $strKey, undef, false, true)}, true, 'get bool default true value');
 
         #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, undef)}, true, 'set bool false (undef) value');
         $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, false, '    check bool false value');
 
+        $self->testResult(sub {$oIni->boolTest($strSection, $strKey, undef, false)}, true, 'test bool on false key');
+
+        #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, false)}, false, 'set bool false value');
         $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, false, '    check value');
 
+        #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, true)}, true, 'set bool false value');
         $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, true, '    check value');
+
+        $self->testResult(sub {$oIni->boolTest($strSection, $strKey, undef, true)}, true, 'test bool on true key');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->numericSet() & Ini->numericGet() & Ini->numericTest()"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testException(
+            sub {$oIni->numericSet($strSection, $strKey)}, ERROR_ASSERT, 'strSection, strKey, and strValue are required');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->numericGet($strSection, $strKey, undef, false, 1000)}, 1000, 'get numeric default value');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->numericSet($strSection, $strKey, undef, 0)}, true, 'set numeric 0 value');
+        $self->testResult(sub {$oIni->numericGet($strSection, $strKey)}, 0, '    check value');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->numericSet($strSection, $strKey, undef, 0)}, false, 'set numeric 0 value again');
+        $self->testResult(sub {$oIni->numericGet($strSection, $strKey)}, 0, '    check value');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->numericSet($strSection, $strKey, undef, -100)}, true, 'set numeric -100 value');
+        $self->testResult(sub {$oIni->numericGet($strSection, $strKey)}, -100, '    check value');
     }
 }
 
