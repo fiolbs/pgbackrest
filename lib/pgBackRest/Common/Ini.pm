@@ -567,13 +567,7 @@ sub boolSet
 ####################################################################################################################################
 sub numericSet
 {
-    my $self = shift;
-    my $strSection = shift;
-    my $strKey = shift;
-    my $strSubKey = shift;
-    my $nValue = shift;
-
-    $self->set($strSection, $strKey, $strSubKey, $nValue + 0);
+    shift->set(shift, shift, shift, shift() + 0);
 }
 
 ####################################################################################################################################
