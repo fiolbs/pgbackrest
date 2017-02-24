@@ -423,12 +423,12 @@ sub get
     # Parameter constraints
     if (!defined($strSection))
     {
-        confess &log(ASSERT, 'section is required');
+        confess &log(ASSERT, 'strSection is required');
     }
 
     if (defined($strSubKey) && !defined($strKey))
     {
-        confess &log(ASSERT, "key is required when subkey '${strSubKey}' is requested");
+        confess &log(ASSERT, "strKey is required when strSubKey '${strSubKey}' is requested");
     }
 
     # Get the result
@@ -450,8 +450,8 @@ sub get
         # Error if a result is required
         if (!defined($bRequired) || $bRequired)
         {
-            confess &log(ASSERT, "section '$strSection'" . (defined($strKey) ? ", key '$strKey'" : '') .
-                                  (defined($strSubKey) ? ", subkey '$strSubKey'" : '') . ' is required but not defined');
+            confess &log(ASSERT, "strSection '$strSection'" . (defined($strKey) ? ", strKey '$strKey'" : '') .
+                                  (defined($strSubKey) ? ", strSubKey '$strSubKey'" : '') . ' is required but not defined');
         }
 
         # Return default if specified
@@ -513,6 +513,12 @@ sub set
     my $strSubKey = shift;
     my $strValue = shift;
 
+    # Parameter constraints
+    if (!(defined($strSection) && defined($strKey) && defined($strValue)))
+    {
+        confess &log(ASSERT, 'strSection, strKey, and strValue are required');
+    }
+
     my $oValue;
 
     if (defined($strSubKey))
@@ -524,7 +530,7 @@ sub set
         $oValue = \$self->{oContent}{$strSection}{$strKey};
     }
 
-    if (!defined($$oValue) || $$oValue ne dclone(\$strValue))
+    if (!defined($$oValue) || $$oValue ne ${dclone(\$strValue)})
     {
         $$oValue = $strValue;
 
