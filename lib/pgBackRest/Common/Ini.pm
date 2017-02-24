@@ -39,6 +39,8 @@ use constant INI_KEY_CHECKSUM                                       => 'backrest
     push @EXPORT, qw(INI_KEY_CHECKSUM);
 use constant INI_KEY_FORMAT                                         => 'backrest-format';
     push @EXPORT, qw(INI_KEY_FORMAT);
+use constant INI_KEY_SEQUENCE                                       => 'backrest-sequence';
+    push @EXPORT, qw(INI_KEY_SEQUENCE);
 use constant INI_KEY_VERSION                                        => 'backrest-version';
     push @EXPORT, qw(INI_KEY_VERSION);
 
@@ -56,26 +58,38 @@ use constant INI_COPY_EXT                                           => '.copy';
 sub new
 {
     my $class = shift;                  # Class name
-    my $strFileName = shift;            # Manifest filename
-    my $bLoad = shift;                  # Load the ini?
 
     # Create the class hash
     my $self = {};
     bless $self, $class;
 
-    # Filename must be specified
-    if (!defined($strFileName))
-    {
-        confess &log(ASSERT, 'filename must be provided');
-    }
+    # Assign function parameters, defaults, and log debug info
+    my
+    (
+        $strOperation,
+        $strFileName,
+        $hParam,
+    ) =
+        logDebugParam
+        (
+            __PACKAGE__ . '->new', \@_,
+            {name => 'strFileName', trace => true},
+            {name => 'hParam', required => false, trace => true},
+        );
 
     # Set variables
     my $oContent = {};
     $self->{oContent} = $oContent;
     $self->{strFileName} = $strFileName;
 
+    # Set changed to false
+    $self->{bChanged} = false;
+
     # Load the ini if specified
-    if (!defined($bLoad) || $bLoad)
+    my $iExpectedFormat = coalesce($hParam->{hInit}->{&INI_KEY_FORMAT}, BACKREST_FORMAT);
+    my $iExpectedVersion = coalesce($hParam->{hInit}->{&INI_KEY_VERSION}, BACKREST_VERSION);
+
+    if (coalesce($hParam->{bLoad}, true))
     {
         $self->load();
 
@@ -85,28 +99,30 @@ sub new
 
         if ($strChecksum ne $strTestChecksum)
         {
-            confess &log(ERROR, "${strFileName} checksum is invalid, should be ${strTestChecksum} but found ${strChecksum}",
-                         ERROR_CHECKSUM);
+            confess &log(ERROR,
+                "invalid checksum in '${strFileName}', expected '${strTestChecksum}' but found '${strChecksum}'", ERROR_CHECKSUM);
         }
 
         # Make sure that the format is current, otherwise error
         my $iFormat = $self->get(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, false, 0);
 
-        if ($iFormat != BACKREST_FORMAT)
+        if ($iFormat != $iExpectedFormat)
         {
-            confess &log(ERROR, "format of ${strFileName} is ${iFormat} but " . BACKREST_FORMAT . ' is required', ERROR_FORMAT);
+            confess &log(ERROR,
+                "invalid format in '${strFileName}', expected " . BACKREST_FORMAT . " but found ${iFormat}", ERROR_FORMAT);
         }
 
         # Check if the version has changed
-        if (!$self->test(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, BACKREST_VERSION))
+        if (!$self->test(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion))
         {
-            $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, BACKREST_VERSION);
+            $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion);
         }
     }
     else
     {
-        $self->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT);
-        $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, BACKREST_VERSION);
+        $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE} = 0 + 0;
+        $self->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, $iExpectedFormat);
+        $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion);
     }
 
     return $self;
@@ -362,27 +378,20 @@ sub hash
 {
     my $self = shift;
 
-    # Remove the old checksum
-    $self->remove(INI_SECTION_BACKREST, INI_KEY_CHECKSUM);
-
-    # Calculate the checksum
-    my $oChecksumContent = dclone($self->{oContent});
-
-    foreach my $strSection (keys(%$oChecksumContent))
-    {
-        delete(${$oChecksumContent}{$strSection}{&INI_COMMENT});
-    }
+    # Remove the old checksum and save the sequence
+    my $iSequence = $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE};
+    delete($self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM});
+    delete($self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
 
     my $oSHA = Digest::SHA->new('sha1');
     my $oJSON = JSON::PP->new()->canonical()->allow_nonref();
-    $oSHA->add($oJSON->encode($oChecksumContent));
+    $oSHA->add($oJSON->encode($self->{oContent}));
 
     # Set the new checksum
-    my $strHash = $oSHA->hexdigest();
+    $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = $oSHA->hexdigest();
+    $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE} = $iSequence + 0;
 
-    $self->set(INI_SECTION_BACKREST, INI_KEY_CHECKSUM, undef, $strHash);
-
-    return $strHash;
+    return $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM};
 }
 
 ####################################################################################################################################
@@ -500,15 +509,26 @@ sub set
     my $strSubKey = shift;
     my $strValue = shift;
 
-    my $oContent = $self->{oContent};
+    my $oValue;
 
     if (defined($strSubKey))
     {
-        ${$oContent}{$strSection}{$strKey}{$strSubKey} = $strValue;
+        $oValue = \$self->{oContent}{$strSection}{$strKey}{$strSubKey};
     }
     else
     {
-        ${$oContent}{$strSection}{$strKey} = $strValue;
+        $oValue = \$self->{oContent}{$strSection}{$strKey};
+    }
+
+    if (!defined($$oValue) || $$oValue ne $strValue)
+    {
+        $$oValue = $strValue;
+
+        if (!$self->{bChanged})
+        {
+            $self->{bChanged} = true;
+            $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE}++;
+        }
     }
 }
 
