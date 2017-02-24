@@ -175,15 +175,15 @@ sub run
         #---------------------------------------------------------------------------------------------------------------------------
         $oIni->{bChanged} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key value');
-        $self->testResult($oIni->{bChanged}, '1', 'check changed flag = true');
+        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
 
         $oIni->{bChanged} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, false, 'set same key value');
-        $self->testResult($oIni->{bChanged}, '0', 'check changed flag remains false');
+        $self->testResult($oIni->{bChanged}, '0', '    check changed flag remains false');
 
         $oIni->{bChanged} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, "${strValue}2")}, true, 'set different key value');
-        $self->testResult($oIni->{bChanged}, '1', 'check changed flag = true');
+        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
 
         $self->testResult(sub {$oIni->get($strSection, $strKey)}, "${strValue}2", 'get last key value');
 
@@ -229,6 +229,22 @@ sub run
         $self->testResult(sub {$oIni->get($strSection, $strKey)}, "{${strSubKey} => ${strValue}}", 'get key value');
 
         $self->testResult(sub {$oIni->get($strSection)}, "{${strKey} => {${strSubKey} => ${strValue}}}", 'get section value');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->boolSet() & Ini->boolGet()"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, undef)}, true, 'set bool false (undef) value');
+        $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, false, '    check bool false value');
+
+        $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, false)}, false, 'set bool false value');
+        $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, false, '    check value');
+
+        $self->testResult(sub {$oIni->boolSet($strSection, $strKey, undef, true)}, true, 'set bool false value');
+        $self->testResult(sub {$oIni->boolGet($strSection, $strKey)}, true, '    check value');
     }
 }
 

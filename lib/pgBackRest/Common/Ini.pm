@@ -553,13 +553,7 @@ sub set
 ####################################################################################################################################
 sub boolSet
 {
-    my $self = shift;
-    my $strSection = shift;
-    my $strKey = shift;
-    my $strSubKey = shift;
-    my $bValue = shift;
-
-    $self->set($strSection, $strKey, $strSubKey, $bValue ? INI_TRUE : INI_FALSE);
+    shift->set(shift, shift, shift, shift ? INI_TRUE : INI_FALSE);
 }
 
 ####################################################################################################################################
