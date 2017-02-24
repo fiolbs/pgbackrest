@@ -138,6 +138,7 @@ sub load
     my $self = shift;
 
     iniLoad($self->{strFileName}, $self->{oContent});
+    $self->{bExists} = true;
 }
 
 ####################################################################################################################################
@@ -228,11 +229,17 @@ sub save
 {
     my $self = shift;
 
-    $self->saveCopy();
-    iniSave($self->{strFileName}, $self->{oContent}, false, true);
+    $self->hash();
 
-    # Indicate the file now exists
-    $self->{bExists} = true;
+    if ($self->{bChanged})
+    {
+        iniSave($self->{strFileName}, $self->{oContent}, false, false);
+        iniSave("$self->{strFileName}" . INI_COPY_EXT, $self->{oContent}, false, false);
+        $self->{bChanged} = false;
+
+        # Indicate the file now exists
+        $self->{bExists} = true;
+    }
 }
 
 ####################################################################################################################################
@@ -244,8 +251,13 @@ sub saveCopy
 {
     my $self = shift;
 
+    if (fileExists($self->{strFileName}))
+    {
+        confess &log(ASSERT, "cannot save copy only when '$self->{strFileName}' exists");
+    }
+
     $self->hash();
-    iniSave("$self->{strFileName}.copy", $self->{oContent}, false, true);
+    iniSave("$self->{strFileName}" . INI_COPY_EXT, $self->{oContent}, false, false);
 }
 
 ####################################################################################################################################
@@ -520,7 +532,7 @@ sub set
         $oValue = \$self->{oContent}{$strSection}{$strKey};
     }
 
-    if (!defined($$oValue) || $$oValue ne $strValue)
+    if (!defined($$oValue) || $$oValue ne dclone(\$strValue))
     {
         $$oValue = $strValue;
 

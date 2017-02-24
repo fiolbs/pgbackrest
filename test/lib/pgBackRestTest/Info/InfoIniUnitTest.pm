@@ -101,6 +101,10 @@ sub run
             '(test.ini, test.ini.copy)',
             'both versions are saved');
 
+        $self->testException(
+            sub {$oIni->saveCopy()}, ERROR_ASSERT,
+            "cannot save copy only when '${strTestFile}' exists");
+
         #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {new pgBackRest::Common::Ini($strTestFile)}, '[object]', 'normal load');
 
@@ -114,25 +118,40 @@ sub run
             "invalid checksum in '${strTestFile}', expected '" .
                 $oIni->get(INI_SECTION_BACKREST, INI_KEY_CHECKSUM) . "' but found 'bogus'");
 
-        $oIni->save();
+        $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = $oIni->hash();
+        iniSave($strTestFile, $hIni);
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{oContent}->{&INI_SECTION_BACKREST}{&INI_KEY_FORMAT} = BACKREST_FORMAT - 1;
+        $oIni->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT - 1);
         $oIni->save();
 
         $self->testException(
             sub {new pgBackRest::Common::Ini($strTestFile)}, ERROR_FORMAT,
             "invalid format in '${strTestFile}', expected " . BACKREST_FORMAT . ' but found ' . (BACKREST_FORMAT - 1));
 
-        $oIni->{oContent}->{&INI_SECTION_BACKREST}{&INI_KEY_FORMAT} = BACKREST_FORMAT;
+        $oIni->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT);
         $oIni->save();
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{oContent}->{&INI_SECTION_BACKREST}{&INI_KEY_VERSION} = '1.01';
+        $oIni->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, '1.01');
         $oIni->save();
+
+        $self->testResult(
+            sub {fileStringRead($strTestFile . INI_COPY_EXT)},
+            $self->iniHeader($oIni, undef, undef, '1.01'),
+            'verify old version was written');
+
         $oIni = new pgBackRest::Common::Ini($strTestFile);
 
         $self->testResult(sub {$oIni->get(INI_SECTION_BACKREST, INI_KEY_VERSION)}, BACKREST_VERSION, 'version is updated on load');
+        $oIni->save();
+
+        $self->testResult(
+            sub {fileStringRead($strTestFile . INI_COPY_EXT)},
+            $self->iniHeader($oIni, undef, undef, BACKREST_VERSION),
+            'verify version is updated on load');
+
+        #---------------------------------------------------------------------------------------------------------------------------
     }
 }
 
