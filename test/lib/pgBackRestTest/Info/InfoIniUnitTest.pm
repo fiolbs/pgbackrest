@@ -173,13 +173,21 @@ sub run
         $self->testException(sub {$oIni->set($strSection, $strKey)}, ERROR_ASSERT, 'strSection, strKey, and strValue are required');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, "", 'set key value');
-        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, "", 'set same key value');
-        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, "${strValue}2")}, "", 'set different key value');
+        $oIni->{bChanged} = false;
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key value');
+        $self->testResult($oIni->{bChanged}, '1', 'check changed flag = true');
+
+        $oIni->{bChanged} = false;
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, false, 'set same key value');
+        $self->testResult($oIni->{bChanged}, '0', 'check changed flag remains false');
+
+        $oIni->{bChanged} = false;
+        $self->testResult(sub {$oIni->set($strSection, $strKey, undef, "${strValue}2")}, true, 'set different key value');
+        $self->testResult($oIni->{bChanged}, '1', 'check changed flag = true');
 
         $self->testResult(sub {$oIni->get($strSection, $strKey)}, "${strValue}2", 'get last key value');
 
-        $self->testResult(sub {$oIni->set($strSection, "${strKey}2", $strSubKey, $strValue)}, "", 'set subkey value');
+        $self->testResult(sub {$oIni->set($strSection, "${strKey}2", $strSubKey, $strValue)}, true, 'set subkey value');
     }
 
     ################################################################################################################################

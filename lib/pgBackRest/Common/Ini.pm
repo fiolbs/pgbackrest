@@ -539,7 +539,11 @@ sub set
             $self->{bChanged} = true;
             $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE}++;
         }
+
+        return true;
     }
+
+    return false;
 }
 
 ####################################################################################################################################
