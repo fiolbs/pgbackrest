@@ -64,11 +64,12 @@ sub run
 {
     my $self = shift;
 
+    # Test ini file
+    my $strTestFile = $self->testPath() . '/test.ini';
+
     ################################################################################################################################
     if ($self->begin("Ini->new"))
     {
-        my $strTestFile = $self->testPath() . '/test.ini';
-
         #---------------------------------------------------------------------------------------------------------------------------
         my $oIni = new pgBackRest::Common::Ini(
             $strTestFile, {bLoad => false, hInit => {&INI_KEY_FORMAT => 4, &INI_KEY_VERSION => '1.01'}});
@@ -151,7 +152,52 @@ sub run
             $self->iniHeader($oIni, undef, undef, BACKREST_VERSION),
             'verify version is updated on load');
 
+        $self->testResult(sub {$oIni->save()}, "0", 'save again with no changes');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->get"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+        my $strSection = 'test-section';
+        my $strKey = 'test-key';
+        my $strSubKey = 'test-subkey';
+        my $strValue = 'test-value';
+
         #---------------------------------------------------------------------------------------------------------------------------
+        $self->testException(sub {$oIni->get()}, ERROR_ASSERT, "section is required");
+
+        $self->testException(sub {$oIni->get($strSection)}, ERROR_ASSERT, "section '${strSection}' is required but not defined");
+
+        $self->testException(
+            sub {$oIni->get($strSection, $strKey, undef)}, ERROR_ASSERT,
+            "section '${strSection}', key '${strKey}' is required but not defined");
+
+        $self->testException(
+            sub {$oIni->get($strSection, undef, $strSubKey)}, ERROR_ASSERT,
+            "key is required when subkey '${strSubKey}' is requested");
+
+        $self->testException(
+            sub {$oIni->get($strSection, $strKey, $strSubKey, true)}, ERROR_ASSERT,
+            "section '${strSection}', key '${strKey}', subkey '${strSubKey}' is required but not defined");
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->get($strSection, undef, undef, false)}, '[undef]', 'section value is not required');
+
+        $self->testResult(sub {$oIni->get($strSection, undef, undef, false, $strValue)}, $strValue, 'section value is defaulted');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $oIni->set($strSection, $strKey, $strSubKey, $strValue);
+
+        $self->testResult(sub {$oIni->get($strSection, "${strKey}2", "${strSubKey}2", false)}, undef, 'missing key value');
+
+        $self->testResult(sub {$oIni->get($strSection, $strKey, "${strSubKey}2", false)}, undef, 'missing subkey value');
+
+        $self->testResult(sub {$oIni->get($strSection, $strKey, $strSubKey)}, $strValue, 'get subkey value');
+
+        $self->testResult(sub {$oIni->get($strSection, $strKey)}, "{${strSubKey} => ${strValue}}", 'get key value');
+
+        $self->testResult(sub {$oIni->get($strSection)}, "{${strKey} => {${strSubKey} => ${strValue}}}", 'get section value');
     }
 }
 

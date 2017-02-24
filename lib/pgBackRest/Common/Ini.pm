@@ -415,58 +415,50 @@ sub get
 {
     my $self = shift;
     my $strSection = shift;
-    my $strValue = shift;
-    my $strSubValue = shift;
+    my $strKey = shift;
+    my $strSubKey = shift;
     my $bRequired = shift;
     my $oDefault = shift;
 
-    my $oContent = $self->{oContent};
-
-    # Section must always be defined
+    # Parameter constraints
     if (!defined($strSection))
     {
-        confess &log(ASSERT, 'section is not defined');
+        confess &log(ASSERT, 'section is required');
     }
 
-    # Set default for required
-    $bRequired = defined($bRequired) ? $bRequired : true;
-
-    # Store the result
-    my $oResult = undef;
-
-    if (defined($strSubValue))
+    if (defined($strSubKey) && !defined($strKey))
     {
-        if (!defined($strValue))
-        {
-            confess &log(ASSERT, "subvalue '${strSubValue}' requested but value is not defined");
-        }
-
-        if (defined(${$oContent}{$strSection}{$strValue}))
-        {
-            $oResult = ${$oContent}{$strSection}{$strValue}{$strSubValue};
-        }
+        confess &log(ASSERT, "key is required when subkey '${strSubKey}' is requested");
     }
-    elsif (defined($strValue))
+
+    # Get the result
+    my $oResult = $self->{oContent}->{$strSection};
+
+    if (defined($strKey) && defined($oResult))
     {
-        if (defined(${$oContent}{$strSection}))
+        $oResult = $oResult->{$strKey};
+
+        if (defined($strSubKey) && defined($oResult))
         {
-            $oResult = ${$oContent}{$strSection}{$strValue};
+            $oResult = $oResult->{$strSubKey};
         }
     }
-    else
-    {
-        $oResult = ${$oContent}{$strSection};
-    }
 
-    if (!defined($oResult) && $bRequired)
+    # When result is not defined
+    if (!defined($oResult))
     {
-        confess &log(ASSERT, "manifest section '$strSection'" . (defined($strValue) ? ", value '$strValue'" : '') .
-                              (defined($strSubValue) ? ", subvalue '$strSubValue'" : '') . ' is required but not defined');
-    }
+        # Error if a result is required
+        if (!defined($bRequired) || $bRequired)
+        {
+            confess &log(ASSERT, "section '$strSection'" . (defined($strKey) ? ", key '$strKey'" : '') .
+                                  (defined($strSubKey) ? ", subkey '$strSubKey'" : '') . ' is required but not defined');
+        }
 
-    if (!defined($oResult) && defined($oDefault))
-    {
-        $oResult = $oDefault;
+        # Return default if specified
+        if (defined($oDefault))
+        {
+            return $oDefault;
+        }
     }
 
     return $oResult
