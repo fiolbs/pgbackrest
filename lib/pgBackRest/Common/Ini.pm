@@ -712,7 +712,7 @@ sub test
 ####################################################################################################################################
 sub boolTest
 {
-    return shift->test(shift, shift, shift, defined($_[0]) ? (shift ? INI_TRUE : INI_FALSE) : undef);
+    return shift->test(shift, shift, shift, defined($_[0]) ? (shift() ? INI_TRUE : INI_FALSE) : undef);
 }
 
 1;
