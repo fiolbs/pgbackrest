@@ -64,7 +64,12 @@ sub run
         #---------------------------------------------------------------------------------------------------------------------------
         my $oIni = new pgBackRest::Common::Ini(
             $strTestFile, {bLoad => false, hInit => {&INI_KEY_FORMAT => 4, &INI_KEY_VERSION => '1.01'}});
+
+        $self->testResult($oIni->exists(), false, 'file does not exist');
+
         $oIni->saveCopy();
+
+        $self->testResult($oIni->exists(), false, 'file does not exist after saveCopy()');
 
         $self->testResult(
             sub {fileStringRead($strTestFile . INI_COPY_EXT)},
@@ -157,26 +162,26 @@ sub run
         $self->testException(sub {$oIni->set(undef, $strKey)}, ERROR_ASSERT, 'strSection and strKey are required');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key value');
-        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
+        $self->testResult($oIni->modified(), true, '    check changed flag = true');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, false, 'set same key value');
-        $self->testResult($oIni->{bChanged}, '0', '    check changed flag remains false');
+        $self->testResult($oIni->modified(), false, '    check changed flag remains false');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, "${strValue}2")}, true, 'set different key value');
-        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
+        $self->testResult($oIni->modified(), true, '    check changed flag = true');
 
         $self->testResult(sub {$oIni->get($strSection, $strKey)}, "${strValue}2", 'get last key value');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, undef)}, true, 'set undef key value');
-        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
+        $self->testResult($oIni->modified(), true, '    check changed flag = true');
 
         #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->set($strSection, "${strKey}2", $strSubKey, $strValue)}, true, 'set subkey value');
@@ -236,16 +241,16 @@ sub run
             "strKey is required when strSubKey '${strSubKey}' is requested");
 
         #---------------------------------------------------------------------------------------------------------------------------
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->remove($strSection)}, false, 'undefined section is not removed');
-        $self->testResult($oIni->{bChanged}, '0', '    check changed flag remains false');
+        $self->testResult($oIni->modified(), '0', '    check changed flag remains false');
 
         #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->set($strSection, $strKey, undef, $strValue)}, true, 'set key');
 
-        $oIni->{bChanged} = false;
+        $oIni->{bModified} = false;
         $self->testResult(sub {$oIni->remove($strSection, $strKey)}, true, '    remove key');
-        $self->testResult($oIni->{bChanged}, '1', '    check changed flag = true');
+        $self->testResult($oIni->modified(), '1', '    check changed flag = true');
         $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, '    test key');
         $self->testResult(sub {$oIni->test($strSection)}, false, '    test section');
 

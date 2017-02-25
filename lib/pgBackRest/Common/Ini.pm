@@ -63,7 +63,7 @@ use constant INI_SORT_NONE                                          => 'none';
     push @EXPORT, qw(INI_SORT_NONE);
 
 ####################################################################################################################################
-# CONSTRUCTOR
+# new()
 ####################################################################################################################################
 sub new
 {
@@ -93,7 +93,10 @@ sub new
     $self->{strFileName} = $strFileName;
 
     # Set changed to false
-    $self->{bChanged} = false;
+    $self->{bModified} = false;
+
+    # Set exists to false
+    $self->{bExists} = false;
 
     # Load the ini if specified
     my $iExpectedFormat = coalesce($hParam->{hInit}{&INI_KEY_FORMAT}, BACKREST_FORMAT);
@@ -139,9 +142,7 @@ sub new
 }
 
 ####################################################################################################################################
-# load
-#
-# Load the ini.
+# load() - load the ini.
 ####################################################################################################################################
 sub load
 {
@@ -152,9 +153,7 @@ sub load
 }
 
 ####################################################################################################################################
-# iniLoad
-#
-# Load file from standard INI format to a hash.
+# iniLoad() - load file from standard INI format to a hash.
 ####################################################################################################################################
 push @EXPORT, qw(iniLoad);
 
@@ -231,9 +230,7 @@ sub iniLoad
 }
 
 ####################################################################################################################################
-# save
-#
-# Save the file.
+# save() - save the file.
 ####################################################################################################################################
 sub save
 {
@@ -241,11 +238,11 @@ sub save
 
     $self->hash();
 
-    if ($self->{bChanged})
+    if ($self->{bModified})
     {
         iniSave($self->{strFileName}, $self->{oContent}, false, false);
         iniSave("$self->{strFileName}" . INI_COPY_EXT, $self->{oContent}, false, false);
-        $self->{bChanged} = false;
+        $self->{bModified} = false;
 
         # Indicate the file now exists
         $self->{bExists} = true;
@@ -253,9 +250,7 @@ sub save
 }
 
 ####################################################################################################################################
-# saveCopy
-#
-# Save a coy of the file.
+# saveCopy - save only a copy of the file.
 ####################################################################################################################################
 sub saveCopy
 {
@@ -271,9 +266,7 @@ sub saveCopy
 }
 
 ####################################################################################################################################
-# iniSave
-#
-# Save from a hash to standard INI format.
+# iniSave() - save from a hash to standard INI format.
 ####################################################################################################################################
 push @EXPORT, qw(iniSave);
 
@@ -392,9 +385,7 @@ sub iniSave
 }
 
 ####################################################################################################################################
-# hash
-#
-# Generate hash for the manifest.
+# hash() - generate hash for the manifest.
 ####################################################################################################################################
 sub hash
 {
@@ -417,9 +408,7 @@ sub hash
 }
 
 ####################################################################################################################################
-# get
-#
-# Get a value.
+# get() - get a value.
 ####################################################################################################################################
 sub get
 {
@@ -475,37 +464,18 @@ sub get
 }
 
 ####################################################################################################################################
-# boolGet
-#
-# Get a numeric value.
+# boolGet() - get a boolean value.
 ####################################################################################################################################
-sub boolGet
-{
-    my $self = shift;
-    my $strSection = shift;
-    my $strValue = shift;
-    my $strSubValue = shift;
-    my $bRequired = shift;
-    my $bDefault = shift;
-
-    return $self->get($strSection, $strValue, $strSubValue, $bRequired,
-                      defined($bDefault) ? ($bDefault ? INI_TRUE : INI_FALSE) : undef) ? true : false;
-}
+sub boolGet {
+    return shift->get(shift, shift, shift, shift, defined($_[0]) ? (shift() ? INI_TRUE : INI_FALSE) : undef) ? true : false}
 
 ####################################################################################################################################
-# numericGet
-#
-# Get a numeric value.
+# numericGet() - get a numeric value.
 ####################################################################################################################################
-sub numericGet
-{
-    return shift->get(shift, shift, shift, shift, defined($_[0]) ? shift() + 0 : undef) + 0;
-}
+sub numericGet {return shift->get(shift, shift, shift, shift, defined($_[0]) ? shift() + 0 : undef) + 0}
 
 ####################################################################################################################################
-# set
-#
-# Set a value.
+# set - set a value.
 ####################################################################################################################################
 sub set
 {
@@ -538,9 +508,9 @@ sub set
     {
         $$oCurrentValue = $oValue;
 
-        if (!$self->{bChanged})
+        if (!$self->{bModified})
         {
-            $self->{bChanged} = true;
+            $self->{bModified} = true;
             $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE}++;
         }
 
@@ -551,45 +521,17 @@ sub set
 }
 
 ####################################################################################################################################
-# boolSet
-#
-# Set a boolean value.
+# boolSet - set a boolean value.
 ####################################################################################################################################
-sub boolSet
-{
-    shift->set(shift, shift, shift, shift() ? INI_TRUE : INI_FALSE);
-}
+sub boolSet {shift->set(shift, shift, shift, shift() ? INI_TRUE : INI_FALSE)}
 
 ####################################################################################################################################
-# numericSet
-#
-# Set a numeric value.
+# numericSet - set a numeric value.
 ####################################################################################################################################
-sub numericSet
-{
-    shift->set(shift, shift, shift, defined($_[0]) ? shift() + 0 : undef);
-}
+sub numericSet {shift->set(shift, shift, shift, defined($_[0]) ? shift() + 0 : undef)}
 
 ####################################################################################################################################
-# commentSet
-#
-# Set a section comment.
-####################################################################################################################################
-# sub commentSet
-# {
-#     my $self = shift;
-#     my $strSection = shift;
-#     my $strComment = shift;
-#
-#     my $oContent = $self->{oContent};
-#
-#     ${$oContent}{$strSection}{&INI_COMMENT} = $strComment;
-# }
-
-####################################################################################################################################
-# remove
-#
-# Remove a value.
+# remove - remove a value.
 ####################################################################################################################################
 sub remove
 {
@@ -629,9 +571,9 @@ sub remove
         }
 
         # Record changes
-        if (!$self->{bChanged})
+        if (!$self->{bModified})
         {
-            $self->{bChanged} = true;
+            $self->{bModified} = true;
             $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE}++;
         }
 
@@ -642,9 +584,7 @@ sub remove
 }
 
 ####################################################################################################################################
-# keys
-#
-# Get a list of keys.
+# keys - get the list of keys in a section.
 ####################################################################################################################################
 sub keys
 {
@@ -677,9 +617,10 @@ sub keys
 }
 
 ####################################################################################################################################
-# test
+# test - test a value.
 #
-# Test a value to see if it equals the supplied test value.  If no test value is given, tests that it is defined.
+# Test a value to see if it equals the supplied test value.  If no test value is given, tests that the section, key, or subkey
+# is defined.
 ####################################################################################################################################
 sub test
 {
@@ -708,13 +649,17 @@ sub test
 }
 
 ####################################################################################################################################
-# boolTest
-#
-# Test a value to see if it equals the supplied test boolean value.  If no test value is given, tests that it is defined.
+# boolTest - test a boolean value, see test().
 ####################################################################################################################################
 sub boolTest
 {
     return shift->test(shift, shift, shift, defined($_[0]) ? (shift() ? INI_TRUE : INI_FALSE) : undef);
 }
+
+####################################################################################################################################
+# Properties.
+####################################################################################################################################
+sub modified {shift->{bModified}}                                   # Has the data been modified since last load/save?
+sub exists {shift->{bExists}}                                       # Is the data persisted to file?
 
 1;
