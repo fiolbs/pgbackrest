@@ -53,6 +53,16 @@ use constant INI_COPY_EXT                                           => '.copy';
     push @EXPORT, qw(INI_COPY_EXT);
 
 ####################################################################################################################################
+# Ini sort orders
+####################################################################################################################################
+use constant INI_SORT_FORWARD                                       => 'forward';
+    push @EXPORT, qw(INI_SORT_FORWARD);
+use constant INI_SORT_REVERSE                                       => 'reverse';
+    push @EXPORT, qw(INI_SORT_REVERSE);
+use constant INI_SORT_NONE                                          => 'none';
+    push @EXPORT, qw(INI_SORT_NONE);
+
+####################################################################################################################################
 # CONSTRUCTOR
 ####################################################################################################################################
 sub new
@@ -86,8 +96,8 @@ sub new
     $self->{bChanged} = false;
 
     # Load the ini if specified
-    my $iExpectedFormat = coalesce($hParam->{hInit}->{&INI_KEY_FORMAT}, BACKREST_FORMAT);
-    my $iExpectedVersion = coalesce($hParam->{hInit}->{&INI_KEY_VERSION}, BACKREST_VERSION);
+    my $iExpectedFormat = coalesce($hParam->{hInit}{&INI_KEY_FORMAT}, BACKREST_FORMAT);
+    my $iExpectedVersion = coalesce($hParam->{hInit}{&INI_KEY_VERSION}, BACKREST_VERSION);
 
     if (coalesce($hParam->{bLoad}, true))
     {
@@ -503,28 +513,28 @@ sub set
     my $strSection = shift;
     my $strKey = shift;
     my $strSubKey = shift;
-    my $strValue = shift;
+    my $oValue = shift;
 
     # Parameter constraints
-    if (!(defined($strSection) && defined($strKey) && defined($strValue)))
+    if (!(defined($strSection) && defined($strKey) && defined($oValue)))
     {
         confess &log(ASSERT, 'strSection, strKey, and strValue are required');
     }
 
-    my $oValue;
+    my $oCurrentValue;
 
     if (defined($strSubKey))
     {
-        $oValue = \$self->{oContent}{$strSection}{$strKey}{$strSubKey};
+        $oCurrentValue = \$self->{oContent}{$strSection}{$strKey}{$strSubKey};
     }
     else
     {
-        $oValue = \$self->{oContent}{$strSection}{$strKey};
+        $oCurrentValue = \$self->{oContent}{$strSection}{$strKey};
     }
 
-    if (!defined($$oValue) || $$oValue ne ${dclone(\$strValue)})
+    if (!defined($$oCurrentValue) || ${dclone($oCurrentValue)} ne ${dclone(\$oValue)})
     {
-        $$oValue = $strValue;
+        $$oCurrentValue = $oValue;
 
         if (!$self->{bChanged})
         {
@@ -593,12 +603,6 @@ sub remove
         if (defined($strSubKey))
         {
             delete($self->{oContent}{$strSection}{$strKey}{$strSubKey});
-
-            # Remove the key if it is now empty
-            if (keys(%{$self->{oContent}{$strSection}{$strKey}}) == 0)
-            {
-                delete($self->{oContent}{$strSection}{$strKey});
-            }
         }
 
         # Remove a key
@@ -646,22 +650,17 @@ sub keys
     my $strSection = shift;
     my $strSortOrder = shift;
 
-    if (!defined($strSection))
-    {
-        confess &log(ASSERT, 'strSection must be set');
-    }
-
     if ($self->test($strSection))
     {
-        if (!defined($strSortOrder) || $strSortOrder eq 'forward')
+        if (!defined($strSortOrder) || $strSortOrder eq INI_SORT_FORWARD)
         {
             return (sort(keys(%{$self->get($strSection)})));
         }
-        elsif ($strSortOrder eq 'reverse')
+        elsif ($strSortOrder eq INI_SORT_REVERSE)
         {
             return (sort {$b cmp $a} (keys(%{$self->get($strSection)})));
         }
-        elsif ($strSortOrder eq 'none')
+        elsif ($strSortOrder eq INI_SORT_NONE)
         {
             return (keys(%{$self->get($strSection)}));
         }

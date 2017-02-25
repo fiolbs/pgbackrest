@@ -274,8 +274,8 @@ sub run
 
         $self->testResult(sub {$oIni->remove($strSection, $strKey, $strSubKey)}, true, '    remove subkey');
         $self->testResult(sub {$oIni->test($strSection, $strKey, $strSubKey)}, false, '    test subkey');
-        $self->testResult(sub {$oIni->test($strSection, $strKey)}, false, '    test key');
-        $self->testResult(sub {$oIni->test($strSection)}, false, '    test section');
+        $self->testResult(sub {$oIni->test($strSection, $strKey)}, true, '    test key');
+        $self->testResult(sub {$oIni->test($strSection)}, true, '    test section');
 
         $self->testResult(sub {$oIni->set($strSection, $strKey, $strSubKey, $strValue)}, true, 'set subkey 1');
         $self->testResult(sub {$oIni->set($strSection, $strKey, "${strSubKey}2", $strValue)}, true, 'set subkey 2');
@@ -356,6 +356,31 @@ sub run
         #---------------------------------------------------------------------------------------------------------------------------
         $self->testResult(sub {$oIni->numericSet($strSection, $strKey, undef, -100)}, true, 'set numeric -100 value');
         $self->testResult(sub {$oIni->numericGet($strSection, $strKey)}, -100, '    check value');
+    }
+
+    ################################################################################################################################
+    if ($self->begin("Ini->keys()"))
+    {
+        my $oIni = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->keys($strSection)}, '[undef]', 'section undefined');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $oIni->set($strSection, 'a', undef, $strValue);
+        $oIni->set($strSection, 'c', undef, $strValue);
+        $oIni->set($strSection, 'b', undef, $strValue);
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(sub {$oIni->keys($strSection)}, '(a, b, c)', 'sort forward (default)');
+
+        $self->testResult(sub {$oIni->keys($strSection, INI_SORT_FORWARD)}, '(a, b, c)', 'sort forward');
+
+        $self->testResult(sub {$oIni->keys($strSection, INI_SORT_REVERSE)}, '(c, b, a)', 'sort reverse');
+
+        $self->testResult(sub {sort($oIni->keys($strSection, INI_SORT_NONE))}, '(a, b, c)', 'sort none');
+
+        $self->testException(sub {sort($oIni->keys($strSection, BOGUS))}, ERROR_ASSERT, "invalid strSortOrder '" . BOGUS . "'");
     }
 }
 

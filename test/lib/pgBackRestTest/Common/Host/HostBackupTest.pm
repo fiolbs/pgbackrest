@@ -1154,13 +1154,16 @@ sub iniSaveChecksum
     # Calculate a new checksum if requested
     if (defined($bChecksum) && $bChecksum)
     {
+        my $iSequence = $oIniRef->{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE};
         delete($$oIniRef{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM});
+        delete($$oIniRef{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
 
         my $oSHA = Digest::SHA->new('sha1');
         my $oJSON = JSON::PP->new()->canonical()->allow_nonref();
         $oSHA->add($oJSON->encode($oIniRef));
 
         $$oIniRef{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = $oSHA->hexdigest();
+        $$oIniRef{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE} = $iSequence;
     }
 
     iniSave($strFileName, $oIniRef);

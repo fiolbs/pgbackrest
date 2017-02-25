@@ -676,9 +676,8 @@ sub restoreCompare
 
     if ($self->synthetic())
     {
-        $oActualManifest->remove(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TIMESTAMP_COPY_START);
-        $oActualManifest->remove(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_LABEL);
-        $oActualManifest->remove(MANIFEST_SECTION_BACKUP, MANIFEST_KEY_TYPE);
+        $oActualManifest->remove(MANIFEST_SECTION_BACKUP);
+        delete($oExpectedManifestRef->{&MANIFEST_SECTION_BACKUP});
     }
     else
     {

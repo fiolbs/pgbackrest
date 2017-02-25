@@ -22,6 +22,7 @@ P00   INFO: stanza-create command end: completed successfully
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [db]
@@ -39,6 +40,7 @@ db-version="9.4"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [db]
@@ -257,6 +259,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -342,10 +345,11 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=2
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -734,6 +738,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -819,10 +824,11 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=3
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -1538,6 +1544,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -1628,11 +1635,12 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=4
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -1828,6 +1836,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -1928,11 +1937,12 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=5
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -1991,6 +2001,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -2087,11 +2098,12 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=6
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-1]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2150,6 +2162,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -2246,11 +2259,12 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=7
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2276,7 +2290,7 @@ restore, backup '[BACKUP-DIFF-2]', expect exit 104 - fail on undef format (db-ma
 ------------------------------------------------------------------------------------------------------------------------------------
 P00   INFO: restore command begin [BACKREST-VERSION]: --no-compress --config=[TEST_PATH]/db-master/pgbackrest.conf --db-path=[TEST_PATH]/db-master/db/base --lock-path=[TEST_PATH]/db-master/repo/lock --log-level-console=detail --log-level-file=trace --log-level-stderr=off --log-path=[TEST_PATH]/db-master/repo/log --repo-path=[TEST_PATH]/db-master/repo --set=[BACKUP-DIFF-2] --stanza=db
 P00   INFO: restore backup set [BACKUP-DIFF-2]
-P00  ERROR: [104]: format of [TEST_PATH]/db-master/db/base/backup.manifest is 0 but 5 is required
+P00  ERROR: [104]: invalid format in '[TEST_PATH]/db-master/db/base/backup.manifest', expected 5 but found 0
 P00   INFO: restore command end: aborted with exception [104]
 
 restore, backup '[BACKUP-DIFF-2]', expect exit 104 - fail on mismatch format (db-master host)
@@ -2284,7 +2298,7 @@ restore, backup '[BACKUP-DIFF-2]', expect exit 104 - fail on mismatch format (db
 ------------------------------------------------------------------------------------------------------------------------------------
 P00   INFO: restore command begin [BACKREST-VERSION]: --no-compress --config=[TEST_PATH]/db-master/pgbackrest.conf --db-path=[TEST_PATH]/db-master/db/base --lock-path=[TEST_PATH]/db-master/repo/lock --log-level-console=detail --log-level-file=trace --log-level-stderr=off --log-path=[TEST_PATH]/db-master/repo/log --repo-path=[TEST_PATH]/db-master/repo --set=[BACKUP-DIFF-2] --stanza=db
 P00   INFO: restore backup set [BACKUP-DIFF-2]
-P00  ERROR: [104]: format of [TEST_PATH]/db-master/db/base/backup.manifest is 0 but 5 is required
+P00  ERROR: [104]: invalid format in '[TEST_PATH]/db-master/db/base/backup.manifest', expected 5 but found 0
 P00   INFO: restore command end: aborted with exception [104]
 
 restore, backup '[BACKUP-DIFF-2]', remap - remap all paths (db-master host)
@@ -2403,6 +2417,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -2495,12 +2510,13 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=8
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2535,6 +2551,7 @@ P00   INFO: stanza-create command end: aborted with exception [115]
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [db]
@@ -2556,12 +2573,13 @@ P00   INFO: stanza-create command end: completed successfully
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2578,6 +2596,7 @@ db-version="9.4"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [db]
@@ -2632,6 +2651,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -2724,13 +2744,14 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=2
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2793,6 +2814,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -2885,14 +2907,15 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=3
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -2947,6 +2970,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -3039,15 +3063,16 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=4
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -3108,6 +3133,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -3198,16 +3224,17 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=5
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -3273,6 +3300,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -3363,17 +3391,18 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=6
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-FULL-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-2]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-2]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-INCR-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-2]","[BACKUP-INCR-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-INCR-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-DIFF-3]","backup-reference":["[BACKUP-FULL-2]","[BACKUP-DIFF-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"incr","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-4]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-2]","backup-reference":["[BACKUP-FULL-2]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":true,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
@@ -3776,6 +3805,7 @@ start-fast=y
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=1
 backrest-version="[VERSION-1]"
 
 [backup]
@@ -3868,11 +3898,12 @@ user="[USER-1]"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
+backrest-sequence=8
 backrest-version="[VERSION-1]"
 
 [backup:current]
-[BACKUP-FULL-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
-[BACKUP-DIFF-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-archive-start":null,"backup-archive-stop":null,"backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-3]","backup-reference":["[BACKUP-FULL-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-FULL-3]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"full","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
+[BACKUP-DIFF-5]={"backrest-format":5,"backrest-version":"[VERSION-1]","backup-info-repo-size":[SIZE],"backup-info-repo-size-delta":[DELTA],"backup-info-size":[SIZE],"backup-info-size-delta":[DELTA],"backup-prior":"[BACKUP-FULL-3]","backup-reference":["[BACKUP-FULL-3]"],"backup-timestamp-start":[TIMESTAMP],"backup-timestamp-stop":[TIMESTAMP],"backup-type":"diff","db-id":1,"option-archive-check":true,"option-archive-copy":true,"option-backup-standby":false,"option-checksum-page":false,"option-compress":false,"option-hardlink":false,"option-online":false}
 
 [db]
 db-catalog-version=201409291
