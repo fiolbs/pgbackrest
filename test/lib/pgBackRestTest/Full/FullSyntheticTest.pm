@@ -421,7 +421,7 @@ sub run
         executeTest(
             'sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strFullBackup} ${strResumePath}");
 
-        executeTest("sudo chmod g+w ${strResumePath}") if $bRemote;
+        executeTest("sudo chmod g+w ${strResumePath} ${strResumePath}/" . FILE_MANIFEST_COPY) if $bRemote;
         my $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
         $oMungeManifest->remove(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/' . DB_FILE_PGVERSION, 'checksum');
@@ -754,9 +754,9 @@ sub run
         $strResumePath =
             $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/' .
             backupLabel($oFile, $strType, substr($strBackup, 0, 16), time());
-        # executeTest("sudo rm -rf ${strResumePath}");
+
         executeTest('sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup} ${strResumePath}");
-        executeTest("sudo chmod g+w ${strResumePath}") if $bRemote;
+        executeTest("sudo chmod g+w ${strResumePath} ${strResumePath}/" . FILE_MANIFEST_COPY) if $bRemote;
         $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
         $oMungeManifest->set(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/badchecksum.txt', 'checksum', 'bogus');
