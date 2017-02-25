@@ -729,6 +729,10 @@ sub restoreCompare
 
     $self->manifestDefault($oExpectedManifestRef);
 
+    # Delete sequences
+    delete($oActualManifest->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
+    delete($oExpectedManifestRef->{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
+
     iniSave("${strTestPath}/actual.manifest", $oActualManifest->{oContent});
     iniSave("${strTestPath}/expected.manifest", $oExpectedManifestRef);
 
