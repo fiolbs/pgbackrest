@@ -516,9 +516,9 @@ sub set
     my $oValue = shift;
 
     # Parameter constraints
-    if (!(defined($strSection) && defined($strKey) && defined($oValue)))
+    if (!(defined($strSection) && defined($strKey)))
     {
-        confess &log(ASSERT, 'strSection, strKey, and strValue are required');
+        confess &log(ASSERT, 'strSection and strKey are required');
     }
 
     my $oCurrentValue;
@@ -532,7 +532,9 @@ sub set
         $oCurrentValue = \$self->{oContent}{$strSection}{$strKey};
     }
 
-    if (!defined($$oCurrentValue) || ${dclone($oCurrentValue)} ne ${dclone(\$oValue)})
+    if (!defined($$oCurrentValue) ||
+        defined($oCurrentValue) != defined($oValue) ||
+        ${dclone($oCurrentValue)} ne ${dclone(\$oValue)})
     {
         $$oCurrentValue = $oValue;
 
