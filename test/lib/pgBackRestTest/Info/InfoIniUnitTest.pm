@@ -12,28 +12,13 @@ use warnings FATAL => qw(all);
 use Carp qw(confess);
 use English '-no_match_vars';
 
-# use File::Basename qw(dirname);
-# use Storable qw(dclone);
-#
-# use pgBackRest::BackupInfo;
 use pgBackRest::Common::Exception;
-# use pgBackRest::Common::Lock;
 use pgBackRest::Common::Ini;
 use pgBackRest::Common::Log;
-# use pgBackRest::Config::Config;
-# use pgBackRest::DbVersion;
-# use pgBackRest::File;
 use pgBackRest::FileCommon;
-# use pgBackRest::Info;
-# use pgBackRest::Protocol::Common;
-# use pgBackRest::Protocol::Protocol;
 use pgBackRest::Version;
-#
-# use pgBackRestTest::Common::Env::EnvHostTest;
-# use pgBackRestTest::Common::ExecuteTest;
-# use pgBackRestTest::Common::Host::HostBackupTest;
+
 use pgBackRestTest::Common::RunTest;
-# use pgBackRestTest::Expire::ExpireEnvTest;
 
 ####################################################################################################################################
 # iniHeader
