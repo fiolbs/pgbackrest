@@ -821,22 +821,6 @@ sub run
             $strBackup, \%oManifest, undef, $bDelta, $bForce, undef, undef, undef, undef, undef, undef,
             'fail on used path', ERROR_PATH_NOT_EMPTY, '--log-level-console=detail');
 
-        # Fail on undef format
-        $oHostBackup->manifestMunge($strBackup, INI_SECTION_BACKREST, INI_KEY_FORMAT);
-
-        $oHostDbMaster->restore(
-            $strBackup, \%oManifest, undef, $bDelta, $bForce, undef, undef, undef, undef, undef, undef,
-            'fail on undef format', ERROR_FORMAT, '--log-level-console=detail');
-
-        # Fail on mismatch format
-        $oHostBackup->manifestMunge($strBackup, INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, 0);
-
-        $oHostDbMaster->restore(
-            $strBackup, \%oManifest, undef, $bDelta, $bForce, undef, undef, undef, undef, undef, undef,
-            'fail on mismatch format', ERROR_FORMAT, '--log-level-console=detail');
-
-        $oHostBackup->manifestMunge($strBackup, INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT);
-
         # Remap the base and tablespace paths
         my %oRemapHash;
         $oRemapHash{&MANIFEST_TARGET_PGDATA} = $oHostDbMaster->dbBasePath(2);
