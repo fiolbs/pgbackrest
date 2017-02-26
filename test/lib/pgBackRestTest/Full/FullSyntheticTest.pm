@@ -249,7 +249,7 @@ sub run
         {
             $strOptionalParam .= ' --protocol-timeout=2 --db-timeout=1';
 
-            # ??? Replace with a unit test.
+            # ??? This test is flapping and needs to implemented as a unit test instead
             # if ($self->processMax() > 1)
             # {
             #     $strTestPoint = TEST_KEEP_ALIVE;
