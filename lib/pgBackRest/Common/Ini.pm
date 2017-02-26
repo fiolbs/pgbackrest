@@ -44,7 +44,7 @@ use constant INI_KEY_SEQUENCE                                       => 'backrest
 use constant INI_KEY_VERSION                                        => 'backrest-version';
     push @EXPORT, qw(INI_KEY_VERSION);
 
-use constant INI_COMMENT                                            => '[comment]';
+# use constant INI_COMMENT                                            => '[comment]';
 
 ####################################################################################################################################
 # Ini file copy extension
@@ -236,8 +236,8 @@ sub save
 
     if ($self->{bModified})
     {
-        iniSave($self->{strFileName}, $self->{oContent}, false, false);
-        iniSave("$self->{strFileName}" . INI_COPY_EXT, $self->{oContent}, false, false);
+        fileStringWrite($self->{strFileName}, iniFormat($self->{oContent}));
+        fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniFormat($self->{oContent}));
         $self->{bModified} = false;
 
         # Indicate the file now exists
@@ -258,41 +258,33 @@ sub saveCopy
     }
 
     $self->hash();
-    iniSave("$self->{strFileName}" . INI_COPY_EXT, $self->{oContent}, false, false);
+    fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniFormat($self->{oContent}));
 }
 
 ####################################################################################################################################
 # iniFormat() - format hash to standard INI format.
 ####################################################################################################################################
-push @EXPORT, qw(iniSave);
+push @EXPORT, qw(iniFormat);
 
-sub iniSave
+sub iniFormat
 {
     # Assign function parameters, defaults, and log debug info
     my
     (
         $strOperation,
-        $strFileName,
         $oContent,
         $bRelaxed,
-        $bTemp
     ) =
         logDebugParam
         (
-            __PACKAGE__ . '::iniSave', \@_,
-            {name => 'strFileName', trace => true},
+            __PACKAGE__ . '::iniFormat', \@_,
             {name => 'oContent', trace => true},
-            {name => 'bRelaxed', default => false, trace => true},
-            {name => 'bTemp', default => false, trace => true}
+            {name => 'bTemp', default => false, trace => true},
         );
 
     # Open the ini file for writing
-    my $strFileTemp = $bTemp ? "${strFileName}.new" : $strFileName;
-    my $hFile;
+    my $strContent = '';
     my $bFirst = true;
-
-    sysopen($hFile, $strFileTemp, O_WRONLY | O_CREAT | O_TRUNC, 0640)
-        or confess &log(ERROR, "unable to open ${strFileTemp}");
 
     # Create the JSON object canonical so that fields are alpha ordered to pass unit tests
     my $oJSON = JSON::PP->new()->canonical()->allow_nonref();
@@ -303,34 +295,32 @@ sub iniSave
         # Add a linefeed between sections
         if (!$bFirst)
         {
-            syswrite($hFile, "\n")
-                or confess "unable to write lf: $!";
+            $strContent .= "\n";
         }
 
         # Write the section comment if present
-        if (defined(${$oContent}{$strSection}{&INI_COMMENT}))
-        {
-            my $strComment = trim(${$oContent}{$strSection}{&INI_COMMENT});
-            $strComment =~ s/\n/\n# /g;
-
-            # syswrite($hFile, ('#' x 80) . "\n# ${strComment}\n" . ('#' x 80) . "\n")
-            #     or confess "unable to comment for section ${strSection}: $!";
-            syswrite($hFile, "# ${strComment}\n")
-                or confess "unable to comment for section ${strSection}: $!";
-        }
+        # if (defined(${$oContent}{$strSection}{&INI_COMMENT}))
+        # {
+        #     my $strComment = trim(${$oContent}{$strSection}{&INI_COMMENT});
+        #     $strComment =~ s/\n/\n# /g;
+        #
+        #     # syswrite($hFile, ('#' x 80) . "\n# ${strComment}\n" . ('#' x 80) . "\n")
+        #     #     or confess "unable to comment for section ${strSection}: $!";
+        #     syswrite($hFile, "# ${strComment}\n")
+        #         or confess "unable to comment for section ${strSection}: $!";
+        # }
 
         # Write the section
-        syswrite($hFile, "[${strSection}]\n")
-            or confess "unable to write section ${strSection}: $!";
+        $strContent .= "[${strSection}]\n";
 
         # Iterate through all keys in the section
-        foreach my $strKey (sort(keys(%{${$oContent}{"${strSection}"}})))
+        foreach my $strKey (sort(keys(%{$oContent->{$strSection}})))
         {
-            # Skip comments
-            if ($strKey eq INI_COMMENT)
-            {
-                next;
-            }
+            # # Skip comments
+            # if ($strKey eq INI_COMMENT)
+            # {
+            #     next;
+            # }
 
             # If the value is a hash then convert it to JSON, otherwise store as is
             my $strValue = ${$oContent}{$strSection}{$strKey};
@@ -343,41 +333,31 @@ sub iniSave
                 {
                     foreach my $strArrayValue (@{$strValue})
                     {
-                        syswrite($hFile, "${strKey}=${strArrayValue}\n")
-                            or confess "unable to write relaxed key array ${strKey}: $!";
+                        $strContent .= "${strKey}=${strArrayValue}\n";
                     }
                 }
                 # Else write a standard key/value pair
                 else
                 {
-                    syswrite($hFile, "${strKey}=${strValue}\n")
-                        or confess "unable to write relaxed key ${strKey}: $!";
+                    $strContent .= "${strKey}=${strValue}\n";
                 }
             }
             # Else write as stricter JSON
             else
             {
-                syswrite($hFile, "${strKey}=" . $oJSON->encode($strValue) . "\n")
-                    or confess "unable to write json key ${strKey}: $!";
+                $strContent .= "${strKey}=" . $oJSON->encode($strValue) . "\n";
             }
         }
 
         $bFirst = false;
     }
 
-    # Sync and close temp file
-    $hFile->sync();
-    close($hFile);
-
-    # Rename temp file to ini file
-    if ($bTemp && !rename($strFileTemp, $strFileName))
-    {
-        unlink($strFileTemp);
-        confess &log(ERROR, "unable to move ${strFileTemp} to ${strFileName}", ERROR_FILE_MOVE);
-    }
-
     # Return from function and log return values if any
-    return logDebugReturn($strOperation);
+    return logDebugReturn
+    (
+        $strOperation,
+        {name => 'strContent', value => $strContent}
+    );
 }
 
 ####################################################################################################################################

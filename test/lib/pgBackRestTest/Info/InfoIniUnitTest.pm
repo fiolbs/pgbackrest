@@ -59,6 +59,20 @@ sub run
     my $strValue = 'test-value';
 
     ################################################################################################################################
+    if ($self->begin("iniFormat()"))
+    {
+        #---------------------------------------------------------------------------------------------------------------------------
+        my $oIni = {section1 => {key => 'value'}, section2 => {key => ['value1', 'value2']}};
+
+        $self->testResult(
+            sub {iniFormat($oIni, true)}, "[section1]\nkey=value\n\n[section2]\nkey=value1\nkey=value2\n",
+            'relaxed formatting');
+        $self->testResult(
+            sub {iniFormat($oIni, false)}, "[section1]\nkey=\"value\"\n\n[section2]\nkey=[\"value1\",\"value2\"]\n",
+            'strict formatting');
+    }
+
+    ################################################################################################################################
     if ($self->begin("iniParse()"))
     {
         #---------------------------------------------------------------------------------------------------------------------------
@@ -132,7 +146,7 @@ sub run
         #---------------------------------------------------------------------------------------------------------------------------
         my $hIni = iniParse(fileStringRead($strTestFile));
         $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = BOGUS;
-        iniSave($strTestFile, $hIni);
+        fileStringWrite($strTestFile, iniFormat($hIni));
 
         $self->testException(
             sub {new pgBackRest::Common::Ini($strTestFile)}, ERROR_CHECKSUM,
@@ -140,7 +154,7 @@ sub run
                 $oIni->get(INI_SECTION_BACKREST, INI_KEY_CHECKSUM) . "' but found 'bogus'");
 
         $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = $oIni->hash();
-        iniSave($strTestFile, $hIni);
+        fileStringWrite($strTestFile, iniFormat($hIni));
 
         #---------------------------------------------------------------------------------------------------------------------------
         $oIni->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT - 1);
