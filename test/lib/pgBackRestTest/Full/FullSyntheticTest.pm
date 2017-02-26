@@ -249,10 +249,11 @@ sub run
         {
             $strOptionalParam .= ' --protocol-timeout=2 --db-timeout=1';
 
-            if ($self->processMax() > 1)
-            {
-                $strTestPoint = TEST_KEEP_ALIVE;
-            }
+            # ??? Replace with a unit test.
+            # if ($self->processMax() > 1)
+            # {
+            #     $strTestPoint = TEST_KEEP_ALIVE;
+            # }
         }
 
         # Create the archive info file
