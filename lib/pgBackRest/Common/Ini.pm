@@ -189,7 +189,7 @@ sub iniParse
 
                 if ($iIndex == -1)
                 {
-                    confess &log(ERROR, "unable to find '=' in '${strLine}'");
+                    confess &log(ERROR, "unable to find '=' in '${strLine}'", ERROR_CONFIG);
                 }
 
                 my $strKey = substr($strLine, 0, $iIndex);
