@@ -181,16 +181,7 @@ sub configRecovery
     my $strStanza = $self->stanza();
 
     # Load db config file
-    my %oConfig;
-    iniLoad($self->backrestConfig(), \%oConfig, true);
-
-    # Load backup config file
-    my %oRemoteConfig;
-
-    if ($oHostBackup->nameTest(HOST_BACKUP))
-    {
-        iniLoad($oHostBackup->backrestConfig(), \%oRemoteConfig, true);
-    }
+    my $oConfig = iniParse(fileStringRead($self->backrestConfig()), true);
 
     # Rewrite recovery options
     my @stryRecoveryOption;
@@ -202,17 +193,11 @@ sub configRecovery
 
     if (@stryRecoveryOption)
     {
-        $oConfig{$strStanza}{&OPTION_RESTORE_RECOVERY_OPTION} = \@stryRecoveryOption;
+        $oConfig->{$strStanza}{&OPTION_RESTORE_RECOVERY_OPTION} = \@stryRecoveryOption;
     }
 
     # Save db config file
-    iniSave($self->backrestConfig(), \%oConfig, true);
-
-    # Save backup config file
-    if ($oHostBackup->nameTest(HOST_BACKUP))
-    {
-        iniSave($oHostBackup->backrestConfig(), \%oRemoteConfig, true);
-    }
+    iniSave($self->backrestConfig(), $oConfig, true);
 }
 
 ####################################################################################################################################
@@ -228,22 +213,21 @@ sub configRemap
     my $strStanza = $self->stanza();
 
     # Load db config file
-    my %oConfig;
-    iniLoad($self->backrestConfig(), \%oConfig, true);
+    my $oConfig = iniParse(fileStringRead($self->backrestConfig()), true);
 
     # Load backup config file
-    my %oRemoteConfig;
+    my $oRemoteConfig;
     my $oHostBackup =
         !$self->standby() && !$self->nameTest($self->backupDestination()) ?
             hostGroupGet()->hostGet($self->backupDestination()) : undef;
 
     if (defined($oHostBackup))
     {
-        iniLoad($oHostBackup->backrestConfig(), \%oRemoteConfig, true);
+        $oRemoteConfig = iniParse(fileStringRead($oHostBackup->backrestConfig()), true);
     }
 
     # Rewrite recovery section
-    delete($oConfig{"${strStanza}:restore"}{&OPTION_TABLESPACE_MAP});
+    delete($oConfig->{"${strStanza}:restore"}{&OPTION_TABLESPACE_MAP});
     my @stryTablespaceMap;
 
     foreach my $strRemap (sort(keys(%$oRemapHashRef)))
@@ -252,13 +236,13 @@ sub configRemap
 
         if ($strRemap eq MANIFEST_TARGET_PGDATA)
         {
-            $oConfig{$strStanza}{&OPTION_DB_PATH} = $strRemapPath;
+            $oConfig->{$strStanza}{&OPTION_DB_PATH} = $strRemapPath;
             ${$oManifestRef}{&MANIFEST_SECTION_BACKUP_TARGET}{&MANIFEST_TARGET_PGDATA}{&MANIFEST_SUBKEY_PATH} = $strRemapPath;
 
             if (defined($oHostBackup))
             {
                 my $bForce = $oHostBackup->nameTest(HOST_BACKUP) && defined(hostGroupGet()->hostGet(HOST_DB_STANDBY, true));
-                $oRemoteConfig{$strStanza}{optionIndex(OPTION_DB_PATH, 1, $bForce)} = $strRemapPath;
+                $oRemoteConfig->{$strStanza}{optionIndex(OPTION_DB_PATH, 1, $bForce)} = $strRemapPath;
             }
         }
         else
@@ -273,16 +257,16 @@ sub configRemap
 
     if (@stryTablespaceMap)
     {
-        $oConfig{"${strStanza}:restore"}{&OPTION_TABLESPACE_MAP} = \@stryTablespaceMap;
+        $oConfig->{"${strStanza}:restore"}{&OPTION_TABLESPACE_MAP} = \@stryTablespaceMap;
     }
 
     # Save db config file
-    iniSave($self->backrestConfig(), \%oConfig, true);
+    iniSave($self->backrestConfig(), $oConfig, true);
 
     # Save backup config file (but not is this is the standby which is not the source of backups)
     if (defined($oHostBackup))
     {
-        iniSave($oHostBackup->backrestConfig(), \%oRemoteConfig, true);
+        iniSave($oHostBackup->backrestConfig(), $oRemoteConfig, true);
     }
 }
 

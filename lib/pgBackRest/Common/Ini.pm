@@ -148,33 +148,29 @@ sub load
 {
     my $self = shift;
 
-    iniLoad($self->{strFileName}, $self->{oContent});
+    $self->{oContent} = iniParse(fileStringRead($self->{strFileName}));
     $self->{bExists} = true;
 }
 
 ####################################################################################################################################
-# iniLoad() - load file from standard INI format to a hash.
+# iniParse() - parse from standard INI format to a hash.
 ####################################################################################################################################
-push @EXPORT, qw(iniLoad);
+push @EXPORT, qw(iniParse);
 
-sub iniLoad
+sub iniParse
 {
-    my $strFileName = shift;
-    my $oContent = shift;
+    my $strContent = shift;
     my $bRelaxed = shift;
 
-    # Open the ini file for reading
-    my $hFile;
+    # Ini content
+    my $oContent = {};
     my $strSection;
-
-    open($hFile, '<', $strFileName)
-        or confess &log(ERROR, "unable to open ${strFileName}");
 
     # Create the JSON object
     my $oJSON = JSON::PP->new()->allow_nonref();
 
     # Read the INI file
-    while (my $strLine = readline($hFile))
+    foreach my $strLine (split("\n", $strContent))
     {
         $strLine = trim($strLine);
 
@@ -193,7 +189,7 @@ sub iniLoad
 
                 if ($iIndex == -1)
                 {
-                    confess &log(ERROR, "unable to read from ${strFileName}: ${strLine}");
+                    confess &log(ERROR, "unable to find '=' in '${strLine}'");
                 }
 
                 my $strKey = substr($strLine, 0, $iIndex);
@@ -225,7 +221,7 @@ sub iniLoad
         }
     }
 
-    close($hFile);
+    # close($hFile);
     return($oContent);
 }
 
@@ -266,7 +262,7 @@ sub saveCopy
 }
 
 ####################################################################################################################################
-# iniSave() - save from a hash to standard INI format.
+# iniFormat() - format hash to standard INI format.
 ####################################################################################################################################
 push @EXPORT, qw(iniSave);
 

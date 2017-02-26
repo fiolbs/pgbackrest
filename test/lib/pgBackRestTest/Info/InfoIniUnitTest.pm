@@ -106,7 +106,7 @@ sub run
         $self->testResult(sub {new pgBackRest::Common::Ini($strTestFile)}, '[object]', 'normal load');
 
         #---------------------------------------------------------------------------------------------------------------------------
-        my $hIni = iniLoad($strTestFile);
+        my $hIni = iniParse(fileStringRead($strTestFile));
         $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = BOGUS;
         iniSave($strTestFile, $hIni);
 

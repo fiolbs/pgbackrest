@@ -238,8 +238,8 @@ sub backupEnd
     # because a running database is always in flux.  Even so, it allows us test many things.
     if (!$self->synthetic())
     {
-        $oExpectedManifest =
-            iniLoad($self->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}/" . FILE_MANIFEST, $oExpectedManifest);
+        $oExpectedManifest = iniParse(
+            fileStringRead($self->repoPath() . '/backup/' . $self->stanza() . "/${strBackup}/" . FILE_MANIFEST));
     }
 
     # Make sure tablespace links are correct
@@ -1011,35 +1011,34 @@ sub manifestMunge
     }
 
     # Read the manifest
-    my %oManifest;
-    iniLoad($self->{oFile}->pathGet(PATH_BACKUP_CLUSTER, $strManifestFile), \%oManifest);
+    my $oManifest = iniParse(fileStringRead($self->{oFile}->pathGet(PATH_BACKUP_CLUSTER, $strManifestFile)));
 
     # Write in the munged value
     if (defined($strSubKey))
     {
         if (defined($strValue))
         {
-            $oManifest{$strSection}{$strKey}{$strSubKey} = $strValue;
+            $oManifest->{$strSection}{$strKey}{$strSubKey} = $strValue;
         }
         else
         {
-            delete($oManifest{$strSection}{$strKey}{$strSubKey});
+            delete($oManifest->{$strSection}{$strKey}{$strSubKey});
         }
     }
     else
     {
         if (defined($strValue))
         {
-            $oManifest{$strSection}{$strKey} = $strValue;
+            $oManifest->{$strSection}{$strKey} = $strValue;
         }
         else
         {
-            delete($oManifest{$strSection}{$strKey});
+            delete($oManifest->{$strSection}{$strKey});
         }
     }
 
     # Resave the manifest
-    $self->iniSaveChecksum($self->{oFile}->pathGet(PATH_BACKUP_CLUSTER, $strManifestFile), \%oManifest, true);
+    $self->iniSaveChecksum($self->{oFile}->pathGet(PATH_BACKUP_CLUSTER, $strManifestFile), $oManifest, true);
 }
 
 ####################################################################################################################################
@@ -1070,7 +1069,7 @@ sub infoMunge
     # If the original file content does not exist then load it
     if (!defined($self->{hInfoFile}{$strFileName}))
     {
-        $self->{hInfoFile}{$strFileName} = iniLoad($strFileName);
+        $self->{hInfoFile}{$strFileName} = iniParse(fileStringRead($strFileName));
         # Modify the file permissions so it can be saved
         executeTest("sudo chmod 660 ${strFileName}");
     }

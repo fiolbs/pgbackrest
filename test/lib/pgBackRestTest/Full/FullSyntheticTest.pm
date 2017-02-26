@@ -247,7 +247,7 @@ sub run
 
         if ($bNeutralTest && $bRemote)
         {
-            $strOptionalParam .= ' --protocol-timeout=1 --db-timeout=.75';
+            $strOptionalParam .= ' --protocol-timeout=2 --db-timeout=1';
 
             if ($self->processMax() > 1)
             {
