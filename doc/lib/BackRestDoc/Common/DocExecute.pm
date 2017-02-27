@@ -556,7 +556,7 @@ sub backrestConfig
             my $strLocalFile = "/home/vagrant/data/pgbackrest.conf";
 
             # Save the ini file
-            iniSave($strLocalFile, $self->{config}{$strHostName}{$$hCacheKey{file}}, true);
+            fileStringWrite($strLocalFile, iniFormat($self->{config}{$strHostName}{$$hCacheKey{file}}, true));
 
             $oHost->copyTo(
                 $strLocalFile, $$hCacheKey{file},
@@ -573,7 +573,7 @@ sub backrestConfig
                 delete($$oConfigClean{&CONFIG_SECTION_GLOBAL});
             }
 
-            iniSave("${strLocalFile}.clean", $oConfigClean, true);
+            fileStringWrite("${strLocalFile}.clean", iniFormat($oConfigClean, true));
 
             # Push config file into the cache
             $strConfig = fileStringRead("${strLocalFile}.clean");

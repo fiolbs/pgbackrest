@@ -299,7 +299,7 @@ P00   INFO: stanza-create command end: aborted with exception [103]
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
-backrest-sequence=1
+backrest-sequence=2
 backrest-version="[VERSION-1]"
 
 [db]
@@ -339,7 +339,7 @@ db-version="9.4"
 [backrest]
 backrest-checksum="[CHECKSUM]"
 backrest-format=5
-backrest-sequence=2
+backrest-sequence=3
 backrest-version="[VERSION-1]"
 
 [db]

@@ -11,7 +11,7 @@ use strict;
 use warnings FATAL => qw(all);
 use Carp qw(confess);
 
-use File::Basename qw(dirname);
+use File::Basename qw(basename dirname);
 
 use pgBackRest::Archive::ArchiveInfo;
 use pgBackRest::BackupCommon;
@@ -422,14 +422,15 @@ sub run
         executeTest(
             'sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strFullBackup} ${strResumePath}");
 
-        executeTest("sudo chmod g+w ${strResumePath} ${strResumePath}/" . FILE_MANIFEST_COPY) if $bRemote;
-        my $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
+        $oHostBackup->manifestMunge(
+            basename($strResumePath),
+            {&MANIFEST_SECTION_TARGET_FILE =>
+                {(&MANIFEST_TARGET_PGDATA . '/' . &DB_FILE_PGVERSION) => {&MANIFEST_SUBKEY_CHECKSUM => undef}}},
+            false);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
-        $oMungeManifest->remove(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/' . DB_FILE_PGVERSION, 'checksum');
-        $oMungeManifest->saveCopy();
 
         # Create a temp file in backup temp root to be sure it's deleted correctly
-        executeTest("touch ${strResumePath}/file.tmp" . ($bCompress ? '.gz' : ''),
+        executeTest("sudo touch ${strResumePath}/file.tmp" . ($bCompress ? '.gz' : ''),
                     {bRemote => $bRemote});
         executeTest("sudo chown " . BACKREST_USER . " ${strResumePath}/file.tmp" . ($bCompress ? '.gz' : ''));
 
@@ -562,9 +563,10 @@ sub run
 
         # Munge the user to make sure it gets reset on the next run
         $oHostBackup->manifestMunge(
-            $strFullBackup, MANIFEST_SECTION_TARGET_FILE, MANIFEST_FILE_PGCONTROL, MANIFEST_SUBKEY_USER, 'bogus');
-        $oHostBackup->manifestMunge(
-            $strFullBackup, MANIFEST_SECTION_TARGET_FILE, MANIFEST_FILE_PGCONTROL, MANIFEST_SUBKEY_GROUP, 'bogus');
+            $strFullBackup,
+            {&MANIFEST_SECTION_TARGET_FILE =>
+                {&MANIFEST_FILE_PGCONTROL => {&MANIFEST_SUBKEY_USER => 'bogus', &MANIFEST_SUBKEY_GROUP => 'bogus'}}},
+            false);
 
         # Restore succeeds
         $oHostDbMaster->manifestLinkMap(\%oManifest, MANIFEST_TARGET_PGDATA . '/pg_stat');
@@ -755,13 +757,14 @@ sub run
         $strResumePath =
             $oHostBackup->repoPath() . '/backup/' . $self->stanza() . '/' .
             backupLabel($oFile, $strType, substr($strBackup, 0, 16), time());
-
         executeTest('sudo mv ' . $oHostBackup->repoPath() . '/backup/' . $self->stanza() . "/${strBackup} ${strResumePath}");
-        executeTest("sudo chmod g+w ${strResumePath} ${strResumePath}/" . FILE_MANIFEST_COPY) if $bRemote;
-        $oMungeManifest = new pgBackRest::Manifest("${strResumePath}/" . FILE_MANIFEST);
+
+        $oHostBackup->manifestMunge(
+            basename($strResumePath),
+            {&MANIFEST_SECTION_TARGET_FILE =>
+                {(&MANIFEST_TARGET_PGDATA . '/badchecksum.txt') => {&MANIFEST_SUBKEY_CHECKSUM => BOGUS}}},
+            false);
         executeTest("sudo rm -f ${strResumePath}/" . FILE_MANIFEST);
-        $oMungeManifest->set(MANIFEST_SECTION_TARGET_FILE, MANIFEST_TARGET_PGDATA . '/badchecksum.txt', 'checksum', 'bogus');
-        $oMungeManifest->saveCopy();
 
         # Add tablespace 2
         $oHostDbMaster->manifestTablespaceCreate(\%oManifest, 2);
@@ -862,7 +865,7 @@ sub run
             'e324463005236d83e6e54795dbddd20a74533bf3', $lTime, undef, undef, false);
 
         # Munge the version to make sure it gets corrected on the next run
-        $oHostBackup->manifestMunge($strBackup, INI_SECTION_BACKREST, INI_KEY_VERSION, undef, '0.00');
+        $oHostBackup->manifestMunge($strBackup, {&INI_SECTION_BACKREST => {&INI_KEY_VERSION => '0.00'}}, false);
 
         $strBackup = $oHostBackup->backup(
             $strType, 'add files and remove tablespace 2',
@@ -1010,7 +1013,8 @@ sub run
 
         # Munge the prior manifest so that option-checksum-page is missing to be sure the logic works for backups before page
         # checksums were introduced
-        $oHostBackup->manifestMunge($strFullBackup, MANIFEST_SECTION_BACKUP_OPTION, MANIFEST_KEY_CHECKSUM_PAGE, undef, undef);
+        $oHostBackup->manifestMunge(
+            $strFullBackup, {&MANIFEST_SECTION_BACKUP_OPTION => {&MANIFEST_KEY_CHECKSUM_PAGE => undef}}, false);
 
         $strBackup = $oHostBackup->backup(
             $strType, 'add file', {oExpectedManifest => \%oManifest,

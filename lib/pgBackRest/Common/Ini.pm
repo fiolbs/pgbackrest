@@ -102,9 +102,16 @@ sub new
     my $iExpectedFormat = coalesce($hParam->{hInit}{&INI_KEY_FORMAT}, BACKREST_FORMAT);
     my $iExpectedVersion = coalesce($hParam->{hInit}{&INI_KEY_VERSION}, BACKREST_VERSION);
 
-    if (coalesce($hParam->{bLoad}, true))
+    if (coalesce($hParam->{bLoad}, true) || defined($hParam->{strContent}))
     {
-        $self->load();
+        if (coalesce($hParam->{bLoad}, true))
+        {
+            $self->load();
+        }
+        else
+        {
+            $self->{oContent} = iniParse($hParam->{strContent});
+        }
 
         # Make sure the ini is valid by testing checksum
         my $strChecksum = $self->get(INI_SECTION_BACKREST, INI_KEY_CHECKSUM);
@@ -356,7 +363,7 @@ sub iniFormat
     return logDebugReturn
     (
         $strOperation,
-        {name => 'strContent', value => $strContent}
+        {name => 'strContent', value => $strContent, trace => true}
     );
 }
 

@@ -15,6 +15,7 @@ use DBI;
 use Exporter qw(import);
     our @EXPORT = qw();
 use Fcntl ':mode';
+use File::Basename qw(dirname);
 use Storable qw(dclone);
 
 use pgBackRest::Common::Exception;
@@ -197,7 +198,7 @@ sub configRecovery
     }
 
     # Save db config file
-    iniSave($self->backrestConfig(), $oConfig, true);
+    fileStringWrite($self->backrestConfig(), iniFormat($oConfig, true));
 }
 
 ####################################################################################################################################
@@ -261,12 +262,21 @@ sub configRemap
     }
 
     # Save db config file
-    iniSave($self->backrestConfig(), $oConfig, true);
+    fileStringWrite($self->backrestConfig(), iniFormat($oConfig, true));
 
     # Save backup config file (but not is this is the standby which is not the source of backups)
     if (defined($oHostBackup))
     {
-        iniSave($oHostBackup->backrestConfig(), $oRemoteConfig, true);
+        # Modify the file permissions so it can be read/saved by all test users
+        executeTest(
+            'sudo chmod 660 ' . $oHostBackup->backrestConfig() . ' && sudo chmod 770 ' . dirname($oHostBackup->backrestConfig()));
+
+        fileStringWrite($oHostBackup->backrestConfig(), iniFormat($oRemoteConfig, true));
+
+        # Fix permissions
+        executeTest(
+            'sudo chmod 660 ' . $oHostBackup->backrestConfig() . ' && sudo chmod 770 ' . dirname($oHostBackup->backrestConfig()) .
+            ' && sudo chown ' . $oHostBackup->userGet() . ' ' . $oHostBackup->backrestConfig());
     }
 }
 
@@ -717,8 +727,8 @@ sub restoreCompare
     delete($oActualManifest->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
     delete($oExpectedManifestRef->{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
 
-    iniSave("${strTestPath}/actual.manifest", $oActualManifest->{oContent});
-    iniSave("${strTestPath}/expected.manifest", $oExpectedManifestRef);
+    fileStringWrite("${strTestPath}/actual.manifest", iniFormat($oActualManifest->{oContent}));
+    fileStringWrite("${strTestPath}/expected.manifest", iniFormat($oExpectedManifestRef));
 
     executeTest("diff ${strTestPath}/expected.manifest ${strTestPath}/actual.manifest");
 

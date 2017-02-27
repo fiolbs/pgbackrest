@@ -186,7 +186,12 @@ sub run
             $self->iniHeader($oIni, undef, undef, BACKREST_VERSION),
             'verify version is updated on load');
 
-        $self->testResult(sub {$oIni->save()}, "0", 'save again with no changes');
+        $self->testResult(sub {$oIni->save()}, false, 'save again with no changes');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        $self->testResult(
+            sub {new pgBackRest::Common::Ini($strTestFile, {bLoad => false, strContent => fileStringRead($strTestFile)})},
+            '[object]', 'new() passing content as a string');
     }
 
     ################################################################################################################################
