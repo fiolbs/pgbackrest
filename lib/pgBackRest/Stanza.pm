@@ -260,7 +260,7 @@ sub infoFileCreate
         # may not be desireable.
 
         # If the info file does not exist, initialize it internally but do not save until complete reconstruction
-        if (!$oInfo->{bExists})
+        if (!$oInfo->exists())
         {
             ($strPathType eq PATH_BACKUP_CLUSTER)
                 ? $oInfo->create($self->{oDb}{strDbVersion}, $self->{oDb}{ullDbSysId}, $self->{oDb}{iControlVersion},
@@ -280,7 +280,7 @@ sub infoFileCreate
         }
 
         # If the file exists on disk, then check if the reconstructed data is the same as what is on disk
-        if ($oInfo->{bExists})
+        if ($oInfo->exists())
         {
             my $oInfoOnDisk =
                 ($strPathType eq PATH_BACKUP_CLUSTER ? new pgBackRest::BackupInfo($strParentPath)
@@ -306,7 +306,7 @@ sub infoFileCreate
 
         # If force was not used and the info file does not exist and the directory is not empty, then error
         # This should also be performed by the calling routine before this function is called, so this is just a safety check
-        if ($iResult == 0 && !optionGet(OPTION_FORCE) && !$oInfo->{bExists} && @$stryFileList)
+        if ($iResult == 0 && !optionGet(OPTION_FORCE) && !$oInfo->exists() && @$stryFileList)
         {
             $iResult = ERROR_PATH_NOT_EMPTY;
             $strResultMessage =
