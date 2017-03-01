@@ -194,6 +194,17 @@ sub run
         $self->testResult(
             sub {new pgBackRest::Common::Ini($strTestFile, {bLoad => false, strContent => fileStringRead($strTestFile)})},
             '[object]', 'new() passing content as a string');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        executeTest("rm -rf ${strTestFile}*");
+        my $oIniSource = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
+
+        $oIniSource->hash();
+        fileStringWrite($strTestFileCopy, iniRender($oIniSource->{oContent}));
+
+        $self->testResult(
+            sub {new pgBackRest::Common::Ini($strTestFile)},
+            '[object]', 'load only from copy');
     }
 
     ################################################################################################################################
