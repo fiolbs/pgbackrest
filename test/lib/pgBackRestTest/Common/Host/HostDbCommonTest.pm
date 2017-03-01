@@ -198,7 +198,7 @@ sub configRecovery
     }
 
     # Save db config file
-    fileStringWrite($self->backrestConfig(), iniFormat($oConfig, true));
+    fileStringWrite($self->backrestConfig(), iniRender($oConfig, true));
 }
 
 ####################################################################################################################################
@@ -262,7 +262,7 @@ sub configRemap
     }
 
     # Save db config file
-    fileStringWrite($self->backrestConfig(), iniFormat($oConfig, true));
+    fileStringWrite($self->backrestConfig(), iniRender($oConfig, true));
 
     # Save backup config file (but not is this is the standby which is not the source of backups)
     if (defined($oHostBackup))
@@ -271,7 +271,7 @@ sub configRemap
         executeTest(
             'sudo chmod 660 ' . $oHostBackup->backrestConfig() . ' && sudo chmod 770 ' . dirname($oHostBackup->backrestConfig()));
 
-        fileStringWrite($oHostBackup->backrestConfig(), iniFormat($oRemoteConfig, true));
+        fileStringWrite($oHostBackup->backrestConfig(), iniRender($oRemoteConfig, true));
 
         # Fix permissions
         executeTest(
@@ -727,8 +727,8 @@ sub restoreCompare
     delete($oActualManifest->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
     delete($oExpectedManifestRef->{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE});
 
-    fileStringWrite("${strTestPath}/actual.manifest", iniFormat($oActualManifest->{oContent}));
-    fileStringWrite("${strTestPath}/expected.manifest", iniFormat($oExpectedManifestRef));
+    fileStringWrite("${strTestPath}/actual.manifest", iniRender($oActualManifest->{oContent}));
+    fileStringWrite("${strTestPath}/expected.manifest", iniRender($oExpectedManifestRef));
 
     executeTest("diff ${strTestPath}/expected.manifest ${strTestPath}/actual.manifest");
 

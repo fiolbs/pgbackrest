@@ -487,8 +487,8 @@ sub backupCompare
 
     my $strTestPath = $self->testPath();
 
-    fileStringWrite("${strTestPath}/actual.manifest", iniFormat($oActualManifest->{oContent}));
-    fileStringWrite("${strTestPath}/expected.manifest", iniFormat($oExpectedManifest));
+    fileStringWrite("${strTestPath}/actual.manifest", iniRender($oActualManifest->{oContent}));
+    fileStringWrite("${strTestPath}/expected.manifest", iniRender($oExpectedManifest));
 
     executeTest("diff ${strTestPath}/expected.manifest ${strTestPath}/actual.manifest");
 
@@ -970,7 +970,7 @@ sub configCreate
     }
 
     # Write out the configuration file
-    fileStringWrite($self->backrestConfig(), iniFormat(\%oParamHash, true));
+    fileStringWrite($self->backrestConfig(), iniRender(\%oParamHash, true));
 
     # Modify the file permissions so it can be read/saved by all test users
     executeTest('sudo chmod 660 ' . $self->backrestConfig());
@@ -1070,7 +1070,7 @@ sub infoMunge
 
     # Make a copy of the original file contents
     my $oMungeIni = new pgBackRest::Common::Ini(
-        $strFileName, {bLoad => false, strContent => iniFormat($self->{hInfoFile}{$strFileName}->{oContent})});
+        $strFileName, {bLoad => false, strContent => iniRender($self->{hInfoFile}{$strFileName}->{oContent})});
 
     # Load params
     foreach my $strSection (keys(%{$hParam}))

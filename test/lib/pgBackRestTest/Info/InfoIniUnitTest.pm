@@ -18,6 +18,7 @@ use pgBackRest::Common::Log;
 use pgBackRest::FileCommon;
 use pgBackRest::Version;
 
+use pgBackRestTest::Common::ExecuteTest;
 use pgBackRestTest::Common::RunTest;
 
 ####################################################################################################################################
@@ -51,6 +52,7 @@ sub run
 
     # Test ini file
     my $strTestFile = $self->testPath() . '/test.ini';
+    my $strTestFileCopy = "${strTestFile}.copy";
 
     # Test keys, values
     my $strSection = 'test-section';
@@ -59,16 +61,16 @@ sub run
     my $strValue = 'test-value';
 
     ################################################################################################################################
-    if ($self->begin("iniFormat()"))
+    if ($self->begin("iniRender()"))
     {
         #---------------------------------------------------------------------------------------------------------------------------
         my $oIni = {section1 => {key => 'value'}, section2 => {key => ['value1', 'value2']}};
 
         $self->testResult(
-            sub {iniFormat($oIni, true)}, "[section1]\nkey=value\n\n[section2]\nkey=value1\nkey=value2\n",
+            sub {iniRender($oIni, true)}, "[section1]\nkey=value\n\n[section2]\nkey=value1\nkey=value2\n",
             'relaxed formatting');
         $self->testResult(
-            sub {iniFormat($oIni, false)}, "[section1]\nkey=\"value\"\n\n[section2]\nkey=[\"value1\",\"value2\"]\n",
+            sub {iniRender($oIni, false)}, "[section1]\nkey=\"value\"\n\n[section2]\nkey=[\"value1\",\"value2\"]\n",
             'strict formatting');
     }
 
@@ -146,7 +148,7 @@ sub run
         #---------------------------------------------------------------------------------------------------------------------------
         my $hIni = iniParse(fileStringRead($strTestFile));
         $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = BOGUS;
-        fileStringWrite($strTestFile, iniFormat($hIni));
+        fileStringWrite($strTestFile, iniRender($hIni));
 
         $self->testException(
             sub {new pgBackRest::Common::Ini($strTestFile)}, ERROR_CHECKSUM,
@@ -154,7 +156,7 @@ sub run
                 $oIni->get(INI_SECTION_BACKREST, INI_KEY_CHECKSUM) . "' but found 'bogus'");
 
         $hIni->{&INI_SECTION_BACKREST}{&INI_KEY_CHECKSUM} = $oIni->hash();
-        fileStringWrite($strTestFile, iniFormat($hIni));
+        fileStringWrite($strTestFile, iniRender($hIni));
 
         #---------------------------------------------------------------------------------------------------------------------------
         $oIni->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, BACKREST_FORMAT - 1);

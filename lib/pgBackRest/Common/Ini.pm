@@ -243,8 +243,8 @@ sub save
 
     if ($self->{bModified})
     {
-        fileStringWrite($self->{strFileName}, iniFormat($self->{oContent}));
-        fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniFormat($self->{oContent}));
+        fileStringWrite($self->{strFileName}, iniRender($self->{oContent}));
+        fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniRender($self->{oContent}));
         $self->{bModified} = false;
 
         # Indicate the file now exists
@@ -265,15 +265,15 @@ sub saveCopy
     }
 
     $self->hash();
-    fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniFormat($self->{oContent}));
+    fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniRender($self->{oContent}));
 }
 
 ####################################################################################################################################
-# iniFormat() - format hash to standard INI format.
+# iniRender() - render hash to standard INI format.
 ####################################################################################################################################
-push @EXPORT, qw(iniFormat);
+push @EXPORT, qw(iniRender);
 
-sub iniFormat
+sub iniRender
 {
     # Assign function parameters, defaults, and log debug info
     my
@@ -284,7 +284,7 @@ sub iniFormat
     ) =
         logDebugParam
         (
-            __PACKAGE__ . '::iniFormat', \@_,
+            __PACKAGE__ . '::iniRender', \@_,
             {name => 'oContent', trace => true},
             {name => 'bTemp', default => false, trace => true},
         );
