@@ -303,6 +303,7 @@ sub logDebugProcess
 
     # Process each parameter hash
     my $oParam = shift;
+    my $bOptionalBlock = false;
 
     # Strip the package name off strFunction if it's pgBackRest
     $strFunction =~ s/^pgBackRest[^\:]*\:\://;
@@ -310,14 +311,42 @@ sub logDebugProcess
     while (defined($oParam))
     {
         my $strParamName = $$oParam{name};
+        my $bParamOptional = defined($oParam->{optional}) && $oParam->{optional};
+        my $bParamRequired = !defined($oParam->{required}) || $oParam->{required};
         my $oValue;
+
+        # If param is optional then the optional block has been entered
+        if ($bParamOptional)
+        {
+            if (defined($oParam->{required}))
+            {
+                confess &log(ASSERT, "cannot define 'required' for optional parameter '${strParamName}'");
+            }
+
+            $bParamRequired = false;
+            $bOptionalBlock = true;
+        }
+
+        if ($bParamOptional != $bOptionalBlock)
+        {
+            confess &log(ASSERT, "non-optional parameter '${strParamName}' invalid after optional parameters");
+        }
 
         # Push the return value into the return value array
         if ($strType eq DEBUG_PARAM)
         {
-            if (defined($$oyParamRef[$iIndex]))
+            if ($bParamOptional)
             {
-                push(@oyResult, $$oyParamRef[$iIndex]);
+                $oValue = $$oyParamRef[$iIndex]->{$strParamName};
+            }
+            else
+            {
+                $oValue = $$oyParamRef[$iIndex];
+            }
+
+            if (defined($oValue))
+            {
+                push(@oyResult, $oValue);
             }
             else
             {
@@ -327,7 +356,7 @@ sub logDebugProcess
 
             $oValue = $oyResult[@oyResult - 1];
 
-            if (!defined($oValue) && (!defined($${oParam}{required}) || $${oParam}{required}))
+            if (!defined($oValue) && $bParamRequired)
             {
                 confess &log(ASSERT, "${strParamName} is required in ${strFunction}");
             }
@@ -355,7 +384,6 @@ sub logDebugProcess
 
         if (!defined($$oParam{log}) || $$oParam{log})
         {
-
             # If the parameter is a hash but not blessed then represent it as a string
             # ??? This should go away once the inputs to logDebug can be changed
             if (ref($oValue) eq 'HASH' && !blessed($oValue))
@@ -378,7 +406,11 @@ sub logDebugProcess
 
         # Get the next parameter hash
         $oParam = shift;
-        $iIndex++;
+
+        if (!$bParamOptional)
+        {
+            $iIndex++;
+        }
     }
 
     if (defined($strDetail) && $iIndex == 0)
