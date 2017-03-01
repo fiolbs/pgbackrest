@@ -103,7 +103,7 @@ sub run
     {
         #---------------------------------------------------------------------------------------------------------------------------
         my $oIni = new pgBackRest::Common::Ini(
-            $strTestFile, {bLoad => false, hInit => {&INI_KEY_FORMAT => 4, &INI_KEY_VERSION => '1.01'}});
+            $strTestFile, {bLoad => false, iInitFormat => 4, strInitVersion => '1.01'});
 
         $self->testResult($oIni->exists(), false, 'file does not exist');
 

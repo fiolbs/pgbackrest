@@ -78,13 +78,19 @@ sub new
     (
         $strOperation,
         $strFileName,
-        $hParam,
+        $bLoad,
+        $strContent,
+        $iInitFormat,
+        $strInitVersion,
     ) =
         logDebugParam
         (
             __PACKAGE__ . '->new', \@_,
             {name => 'strFileName', trace => true},
-            {name => 'hParam', required => false, trace => true},
+            {name => 'bLoad', optional => true, default => true, trace => true},
+            {name => 'strContent', optional => true, trace => true},
+            {name => 'iInitFormat', optional => true, default => BACKREST_FORMAT, trace => true},
+            {name => 'strInitVersion', optional => true, default => BACKREST_VERSION, trace => true},
         );
 
     # Set variables
@@ -98,19 +104,15 @@ sub new
     # Set exists to false
     $self->{bExists} = false;
 
-    # Load the ini if specified
-    my $iExpectedFormat = coalesce($hParam->{hInit}{&INI_KEY_FORMAT}, BACKREST_FORMAT);
-    my $iExpectedVersion = coalesce($hParam->{hInit}{&INI_KEY_VERSION}, BACKREST_VERSION);
-
-    if (coalesce($hParam->{bLoad}, true) || defined($hParam->{strContent}))
+    if ($bLoad || defined($strContent))
     {
-        if (coalesce($hParam->{bLoad}, true))
+        if ($bLoad)
         {
             $self->load();
         }
         else
         {
-            $self->{oContent} = iniParse($hParam->{strContent});
+            $self->{oContent} = iniParse($strContent);
         }
 
         # Make sure the ini is valid by testing checksum
@@ -126,23 +128,23 @@ sub new
         # Make sure that the format is current, otherwise error
         my $iFormat = $self->get(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, false, 0);
 
-        if ($iFormat != $iExpectedFormat)
+        if ($iFormat != $iInitFormat)
         {
             confess &log(ERROR,
                 "invalid format in '${strFileName}', expected " . BACKREST_FORMAT . " but found ${iFormat}", ERROR_FORMAT);
         }
 
         # Check if the version has changed
-        if (!$self->test(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion))
+        if (!$self->test(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $strInitVersion))
         {
-            $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion);
+            $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $strInitVersion);
         }
     }
     else
     {
         $self->{oContent}{&INI_SECTION_BACKREST}{&INI_KEY_SEQUENCE} = 0 + 0;
-        $self->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, $iExpectedFormat);
-        $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $iExpectedVersion);
+        $self->numericSet(INI_SECTION_BACKREST, INI_KEY_FORMAT, undef, $iInitFormat);
+        $self->set(INI_SECTION_BACKREST, INI_KEY_VERSION, undef, $strInitVersion);
     }
 
     return $self;
