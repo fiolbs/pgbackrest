@@ -155,7 +155,30 @@ sub load
 {
     my $self = shift;
 
-    $self->{oContent} = iniParse(fileStringRead($self->{strFileName}));
+    my $strContent = fileStringRead($self->{strFileName}, {bIgnoreMissing => true});
+    my $strContentCopy = fileStringRead($self->{strFileName} . INI_COPY_EXT, {bIgnoreMissing => true});
+
+    if (defined($strContent) && defined($strContentCopy))
+    {
+        # !!! FIX THIS
+        $self->{oContent} = iniParse($strContent);
+    }
+    # If only the main file exists then use it
+    elsif (defined($strContent) && !defined($strContentCopy))
+    {
+        $self->{oContent} = iniParse($strContent);
+    }
+    # If only the copy exists then use it
+    elsif (!defined($strContent) && defined($strContentCopy))
+    {
+        $self->{oContent} = iniParse($strContentCopy);
+    }
+    # If neither exists then error
+    else
+    {
+        confess &log(ERROR, "unable to open $self->{strFileName} or $self->{strFileName}" . INI_COPY_EXT, ERROR_FILE_OPEN);
+    }
+
     $self->{bExists} = true;
 }
 
@@ -244,7 +267,7 @@ sub save
     if ($self->{bModified})
     {
         fileStringWrite($self->{strFileName}, iniRender($self->{oContent}));
-        fileStringWrite("$self->{strFileName}" . INI_COPY_EXT, iniRender($self->{oContent}));
+        fileStringWrite($self->{strFileName} . INI_COPY_EXT, iniRender($self->{oContent}));
         $self->{bModified} = false;
 
         # Indicate the file now exists

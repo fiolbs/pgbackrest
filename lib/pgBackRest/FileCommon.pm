@@ -723,6 +723,8 @@ sub fileOpen
         {
             logErrorResult($OS_ERROR{ENOENT} ? ERROR_FILE_MISSING : ERROR_FILE_OPEN, "unable to open ${strFile}", $OS_ERROR);
         }
+
+        undef($hFile);
     }
 
     # Return from function and log return values if any
