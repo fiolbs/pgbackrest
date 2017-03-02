@@ -197,14 +197,25 @@ sub run
 
         #---------------------------------------------------------------------------------------------------------------------------
         executeTest("rm -rf ${strTestFile}*");
+
+        $self->testException(
+            sub {new pgBackRest::Common::Ini($strTestFile)}, ERROR_FILE_OPEN,
+            "unable to open ${strTestFile} or ${strTestFileCopy}");
+
+        #---------------------------------------------------------------------------------------------------------------------------
         my $oIniSource = new pgBackRest::Common::Ini($strTestFile, {bLoad => false});
 
         $oIniSource->hash();
         fileStringWrite($strTestFileCopy, iniRender($oIniSource->{oContent}));
 
-        $self->testResult(
-            sub {new pgBackRest::Common::Ini($strTestFile)},
-            '[object]', 'load only from copy');
+        $self->testResult(sub {new pgBackRest::Common::Ini($strTestFile)}, '[object]', 'load only from copy');
+
+        #---------------------------------------------------------------------------------------------------------------------------
+        fileRemove($strTestFileCopy);
+
+        fileStringWrite($strTestFile, iniRender($oIniSource->{oContent}));
+
+        $self->testResult(sub {new pgBackRest::Common::Ini($strTestFile)}, '[object]', 'load only from main');
     }
 
     ################################################################################################################################

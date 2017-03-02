@@ -158,25 +158,31 @@ sub load
     my $strContent = fileStringRead($self->{strFileName}, {bIgnoreMissing => true});
     my $strContentCopy = fileStringRead($self->{strFileName} . INI_COPY_EXT, {bIgnoreMissing => true});
 
+    # If both exist then pick a candidate
     if (defined($strContent) && defined($strContentCopy))
     {
+        # my $oContent = iniParse($strContent, {bIgnoreInvalid => true});
+        # my $oContentCopy = iniParse($strContentCopy, {bIgnoreInvalid => true});
+
         # !!! FIX THIS
         $self->{oContent} = iniParse($strContent);
     }
-    # If only the main file exists then use it
-    elsif (defined($strContent) && !defined($strContentCopy))
-    {
-        $self->{oContent} = iniParse($strContent);
-    }
-    # If only the copy exists then use it
-    elsif (!defined($strContent) && defined($strContentCopy))
-    {
-        $self->{oContent} = iniParse($strContentCopy);
-    }
-    # If neither exists then error
-    else
+    # If neither exist then error
+    elsif (!defined($strContent) && !defined($strContentCopy))
     {
         confess &log(ERROR, "unable to open $self->{strFileName} or $self->{strFileName}" . INI_COPY_EXT, ERROR_FILE_OPEN);
+    }
+    # Else only one exists and must considered valid as long as it parses
+    else
+    {
+        if (defined($strContent))
+        {
+            $self->{oContent} = iniParse($strContent);
+        }
+        else
+        {
+            $self->{oContent} = iniParse($strContentCopy);
+        }
     }
 
     $self->{bExists} = true;
@@ -214,6 +220,11 @@ sub iniParse
             }
             else
             {
+                if (!defined($strSection))
+                {
+                    confess &log(ERROR, "key/value pair '${strLine}' found outside of a section", ERROR_CONFIG);
+                }
+
                 # Get key and value
                 my $iIndex = index($strLine, '=');
 
