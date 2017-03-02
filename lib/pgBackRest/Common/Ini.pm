@@ -44,8 +44,6 @@ use constant INI_KEY_SEQUENCE                                       => 'backrest
 use constant INI_KEY_VERSION                                        => 'backrest-version';
     push @EXPORT, qw(INI_KEY_VERSION);
 
-# use constant INI_COMMENT                                            => '[comment]';
-
 ####################################################################################################################################
 # Ini file copy extension
 ####################################################################################################################################
@@ -307,30 +305,12 @@ sub iniRender
             $strContent .= "\n";
         }
 
-        # Write the section comment if present
-        # if (defined(${$oContent}{$strSection}{&INI_COMMENT}))
-        # {
-        #     my $strComment = trim(${$oContent}{$strSection}{&INI_COMMENT});
-        #     $strComment =~ s/\n/\n# /g;
-        #
-        #     # syswrite($hFile, ('#' x 80) . "\n# ${strComment}\n" . ('#' x 80) . "\n")
-        #     #     or confess "unable to comment for section ${strSection}: $!";
-        #     syswrite($hFile, "# ${strComment}\n")
-        #         or confess "unable to comment for section ${strSection}: $!";
-        # }
-
         # Write the section
         $strContent .= "[${strSection}]\n";
 
         # Iterate through all keys in the section
         foreach my $strKey (sort(keys(%{$oContent->{$strSection}})))
         {
-            # # Skip comments
-            # if ($strKey eq INI_COMMENT)
-            # {
-            #     next;
-            # }
-
             # If the value is a hash then convert it to JSON, otherwise store as is
             my $strValue = ${$oContent}{$strSection}{$strKey};
 
