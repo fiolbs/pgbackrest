@@ -124,7 +124,7 @@ sub logFileSet
         $bLogFileExists = -e $strFile ? true : false;
         $bLogFileFirst = true;
 
-        $hLogFile = fileOpen($strFile, O_WRONLY | O_CREAT | O_APPEND, '0660');
+        $hLogFile = fileOpen($strFile, O_WRONLY | O_CREAT | O_APPEND);
 
         # Write out anything that was cached before the file was opened
         if (defined($strLogFileCache))
